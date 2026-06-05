@@ -193,15 +193,17 @@
       padding: 14px;
       display: grid;
       grid-template-columns: 84px 1fr;
-      gap: 12px;
+      gap: 14px;
+      align-items: start;
     }
 
     .item img {
       width: 84px;
-      aspect-ratio: 1;
+      height: 84px;
       object-fit: cover;
       border-radius: 10px;
       background: #1f2937;
+      display: block;
     }
 
     .item h3 {
@@ -215,6 +217,41 @@
       margin-bottom: 4px;
       line-height: 1.45;
     }
+  
+      .item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .item-meta {
+    display: grid;
+    gap: 4px;
+  }
+
+  .item-meta p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .item-actions .btn {
+    padding: 6px 10px;
+    font-size: 0.82rem;
+    border-radius: 9px;
+    min-width: auto;
+  }
 
     .item-actions {
       display: flex;
@@ -259,17 +296,41 @@
       margin: 0 auto 24px;
     }
 
+    .mini-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
     @media (max-width: 920px) {
       .layout {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 600px) {
-      .item {
-        grid-template-columns: 1fr;
-      }
-    }
+@media (max-width: 600px) {
+  .item {
+    grid-template-columns: 1fr;
+  }
+
+  .item img {
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .item-actions {
+    width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -547,20 +608,28 @@ function filteredGroups() {
         return;
       }
 
-      groupList.innerHTML = data.map(group => `
-        <article class="item">
-          <img
-            src="${group.image || "https://placehold.co/200x200?text=Sin+imagen"}"
-            alt="Imagen de ${group.name || "agrupación"}"
-            onerror="this.src='https://placehold.co/200x200?text=Sin+imagen'"
-         "Pendiente"}</p>
-            <div class="item-actions">
-              <button class="btn btn-secondary" onclick="editGroup('${group.id}')">Editar</button>
-              <button class="btn btn-danger" onclick="removeGroup('${group.id}')">Borrar</button>
-            </div>
-          </div>
-        </article>
-      `).join("");
+groupList.innerHTML = data.map(group => `
+  <article class="item">
+    ${group.image || 'https://placehold.co/200x200?text=Sin+imagen'}
+
+    <div class="item-content">
+      <h3>${group.name || "Sin nombre"}</h3>
+
+     <div class="item-meta">
+  <p>
+    <span class="mini-badge">${group.year || "-"}</span>
+    <span class="mini-badge">${group.type || "-"}</span>
+  </p>
+  <p><strong>Autores:</strong> ${group.authors || "Pendiente"}</p>
+</div>
+
+      <div class="item-actions">
+        <button class="btn btn-secondary" onclick="editGroup('${group.id}')">Editar</button>
+        <button class="btn btn-danger" onclick="removeGroup('${group.id}')">Borrar</button>
+      </div>
+    </div>
+  </article>
+`).join("");
     };
 
     window.login = async function() {
