@@ -610,18 +610,22 @@ function filteredGroups() {
 
 groupList.innerHTML = data.map(group => `
   <article class="item">
-    ${group.image || 'https://placehold.co/200x200?text=Sin+imagen'}
+    <img
+      src="${group.image || 'https://placehold.co/200x200?text=Sin+imagen'}"
+      alt="Imagen de ${group.name || 'agrupación'}"
+      onerror="this.src='https://placehold.co/200x200?text=Sin+imagen'"
+    >
 
     <div class="item-content">
       <h3>${group.name || "Sin nombre"}</h3>
 
-     <div class="item-meta">
-  <p>
-    <span class="mini-badge">${group.year || "-"}</span>
-    <span class="mini-badge">${group.type || "-"}</span>
-  </p>
-  <p><strong>Autores:</strong> ${group.authors || "Pendiente"}</p>
-</div>
+      <div class="item-meta">
+        <p>
+          <span class="mini-badge">${group.year || "-"}</span>
+          <span class="mini-badge">${group.type || "-"}</span>
+        </p>
+        <p><strong>Autores:</strong> ${group.authors || "Pendiente"}</p>
+      </div>
 
       <div class="item-actions">
         <button class="btn btn-secondary" onclick="editGroup('${group.id}')">Editar</button>
@@ -630,6 +634,7 @@ groupList.innerHTML = data.map(group => `
     </div>
   </article>
 `).join("");
+
     };
 
     window.login = async function() {
