@@ -781,6 +781,15 @@ groupList.innerHTML = data.map(group => `
       el.textContent = message;
       el.classList.add(type);
     }
+const search = normalizeText(document.getElementById("searchInput").value);
+
+const filtered = agrupaciones.filter(item =>
+  normalizeText(item.name).includes(search) ||
+  normalizeText(item.year).includes(search) ||
+  normalizeText(item.type).includes(search) ||
+  normalizeText(item.author).includes(search)
+);
+
   </script>
 </body>
 </html>
