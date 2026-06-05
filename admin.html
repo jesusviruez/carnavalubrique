@@ -543,7 +543,14 @@ onSnapshot(collection(db, "agrupaciones"), (snapshot) => {
         authBtn.classList.add("btn-secondary");
       }
     });
-
+function normalizeText(text) {
+  return (text || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
     function populateYearFilter() {
       const currentValue = yearFilter.value;
       const years = [...new Set(groups.map(g => String(g.year)).filter(Boolean))]
@@ -578,15 +585,26 @@ onSnapshot(collection(db, "agrupaciones"), (snapshot) => {
 }
 
 function filteredGroups() {
-  const search = searchInput.value.toLowerCase().trim();
+  const search = normalizeText(searchInput.value);
   const year = yearFilter.value;
   const type = typeFilter.value;
 
   return groups.filter(group => {
-    const byName = !search || (group.name && group.name.toLowerCase().includes(search));
-    const byYear = year === "all" || String(group.year) === year;
-    const byType = type === "all" || (group.type || "") === type;
-    return byName && byYear && byType;
+    const matchesSearch =
+      !search ||
+      normalizeText(group.name).includes(search) ||
+      normalizeText(group.authors).includes(search) ||
+      normalizeText(group.type).includes(search) ||
+      normalizeText(group.year).includes(search) ||
+      normalizeText(group.notes).includes(search);
+
+    const matchesYear =
+      year === "all" || String(group.year) === year;
+
+    const matchesType =
+      type === "all" || (group.type || "") === type;
+
+    return matchesSearch && matchesYear && matchesType;
   }).sort((a, b) => {
     if (String(b.year) !== String(a.year)) {
       return Number(b.year || 0) - Number(a.year || 0);
@@ -594,6 +612,7 @@ function filteredGroups() {
     return (a.name || "").localeCompare((b.name || ""), "es");
   });
 }
+
 
     window.renderList = function() {
       if (!userLoggedIn) {
@@ -781,14 +800,7 @@ groupList.innerHTML = data.map(group => `
       el.textContent = message;
       el.classList.add(type);
     }
-const search = normalizeText(document.getElementById("searchInput").value);
 
-const filtered = agrupaciones.filter(item =>
-  normalizeText(item.name).includes(search) ||
-  normalizeText(item.year).includes(search) ||
-  normalizeText(item.type).includes(search) ||
-  normalizeText(item.author).includes(search)
-);
 
   </script>
 </body>
