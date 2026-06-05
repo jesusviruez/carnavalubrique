@@ -391,17 +391,17 @@
           Lista centralizada para buscar, editar y borrar registros.
         </p>
 
-        <div class="toolbar">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="🔎 Buscar por nombre..."
-            oninput="renderList()"
-          >
-          <select id="yearFilter" onchange="renderList()">
-            <option value="all">Todos los años</option>
-          </select>
-        </div>
+<div class="toolbar">
+  <input type="text" id="searchInput" placeholder="🔎 Buscar por nombre..." oninput="renderList()">
+
+  <select id="yearFilter" onchange="renderList()">
+    <option value="all">Todos los años</option>
+  </select>
+
+  <select id="typeFilter" onchange="renderList()">
+    <option value="all">Todos los tipos</option>
+  </select>
+</div>
 
         <div id="groupList" class="list">
           <div class="empty-state">Cargando agrupaciones...</div>
@@ -448,6 +448,7 @@ const firebaseConfig = {
     let userLoggedIn = false;
 
     const yearFilter = document.getElementById("yearFilter");
+    const typeFilter = document.getElementById("typeFilter");
     const searchInput = document.getElementById("searchInput");
     const groupList = document.getElementById("groupList");
 
@@ -455,12 +456,13 @@ const firebaseConfig = {
     const adminPanel = document.getElementById("adminPanel");
     const authBtn = document.getElementById("authBtn");
 
-    onSnapshot(collection(db, "agrupaciones"), (snapshot) => {
-      groups = [];
-      snapshot.forEach((docItem) => groups.push({ id: docItem.id, ...docItem.data() }));
-      populateYearFilter();
-      renderList();
-    });
+onSnapshot(collection(db, "agrupaciones"), (snapshot) => {
+  groups = [];
+  snapshot.forEach((docItem) => groups.push({ id: docItem.id, ...docItem.data() }));
+  populateYearFilter();
+  populateTypeFilter();
+  renderList();
+});
 
     onAuthStateChanged(auth, (user) => {
       userLoggedIn = !!user;
@@ -497,23 +499,40 @@ const firebaseConfig = {
       }
     }
 
-    function filteredGroups() {
-      const search = searchInput.value.toLowerCase().trim();
-      const year = yearFilter.value;
+    function populateTypeFilter() {
+  const currentValue = typeFilter.value;
 
-      return groups
-        .filter(group => {
-          const byName = !search || (group.name && group.name.toLowerCase().includes(search));
-          const byYear = year === "all" || String(group.year) === year;
-          return byName && byYear;
-        })
-        .sort((a, b) => {
-          if (String(b.year) !== String(a.year)) {
-            return Number(b.year || 0) - Number(a.year || 0);
-          }
-          return (a.name || "").localeCompare((b.name || ""), "es");
-        });
+  const types = [...new Set(groups.map(g => (g.type || "").trim()).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "es"));
+
+  typeFilter.innerHTML =
+    '<option value="all">Todos los tipos</option>' +
+    types.map(type => `<option value="${type}">${type}</option>`).join("");
+
+  if (types.includes(currentValue)) {
+    typeFilter.value = currentValue;
+  } else {
+    typeFilter.value = "all";
+  }
+}
+
+function filteredGroups() {
+  const search = searchInput.value.toLowerCase().trim();
+  const year = yearFilter.value;
+  const type = typeFilter.value;
+
+  return groups.filter(group => {
+    const byName = !search || (group.name && group.name.toLowerCase().includes(search));
+    const byYear = year === "all" || String(group.year) === year;
+    const byType = type === "all" || (group.type || "") === type;
+    return byName && byYear && byType;
+  }).sort((a, b) => {
+    if (String(b.year) !== String(a.year)) {
+      return Number(b.year || 0) - Number(a.year || 0);
     }
+    return (a.name || "").localeCompare((b.name || ""), "es");
+  });
+}
 
     window.renderList = function() {
       if (!userLoggedIn) {
