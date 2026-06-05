@@ -252,14 +252,15 @@
     import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Sustituye estos valores por los de tu proyecto de Firebase
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
+    authDomain: "carnavalubrique.firebaseapp.com",
+    projectId: "carnavalubrique",
+    storageBucket: "carnavalubrique.firebasestorage.app",
+    messagingSenderId: "925068714888",
+    appId: "1:925068714888:web:cc2f7f3ca165515907903d",
+    measurementId: "G-LT0TP9BWSR"
+  };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
