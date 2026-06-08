@@ -17,6 +17,7 @@
       --danger: #ef4444;
       --danger-hover: #dc2626;
       --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -26,6 +27,7 @@
       min-height: 100vh;
       padding: 0 20px 40px;
     }
+    body.modal-open { overflow: hidden; }
     .container { max-width: 1380px; margin: 0 auto; }
     header {
       display: flex;
@@ -44,7 +46,7 @@
       font-size: 0.96rem;
       line-height: 1.5;
     }
-    .top-actions {
+    .top-actions, .toolbar, .tabs, .form-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
@@ -69,7 +71,6 @@
     .btn-danger { background: var(--danger); color: #fff; }
     .btn-danger:hover { background: var(--danger-hover); }
     .btn-small { padding: 7px 10px; font-size: 0.82rem; border-radius: 9px; }
-
     .panel {
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
@@ -90,6 +91,7 @@
       display: none;
       font-size: 0.92rem;
       line-height: 1.45;
+      white-space: pre-wrap;
     }
     .status.success {
       display: block;
@@ -103,13 +105,7 @@
       color: #fca5a5;
       border: 1px solid rgba(239,68,68,0.2);
     }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
+    .tabs { margin-bottom: 18px; }
     .tab-btn {
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.05);
@@ -126,19 +122,14 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(360px, 520px) 1fr;
-      gap: 24px;
-      align-items: start;
+    .toolbar {
+      align-items: center;
+      margin-bottom: 16px;
     }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
+    .toolbar input, .toolbar select {
+      min-width: 180px;
+      flex: 1;
     }
-    label { font-size: 0.9rem; font-weight: 700; }
     input, select, textarea {
       width: 100%;
       background: var(--panel-3);
@@ -150,19 +141,6 @@
       font: inherit;
     }
     textarea { min-height: 90px; resize: vertical; }
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .toolbar input, .toolbar select { min-width: 170px; }
     .list { display: grid; gap: 14px; }
     .item {
       background: var(--panel);
@@ -182,12 +160,7 @@
       background: #1f2937;
       display: block;
     }
-    .item-content {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-width: 0;
-    }
+    .item-content { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
     .item-meta { display: grid; gap: 4px; }
     .item-meta p {
       margin: 0;
@@ -243,11 +216,60 @@
       gap: 12px;
     }
     .repeater-actions { display: flex; justify-content: flex-end; }
-    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(100%, 900px);
+      max-height: calc(100vh - 40px);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(11,18,32,0.98));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 20px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title-wrap { display: grid; gap: 6px; min-width: 0; }
+    .modal-title { font-size: 1.35rem; line-height: 1.25; word-break: break-word; }
+    .modal-subtitle { color: var(--muted); font-size: 0.95rem; }
+    .modal-close {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      overflow: auto;
+      padding: 18px 20px 20px;
+    }
+    .top-buttons { justify-content: space-between; align-items: center; }
     @media (max-width: 700px) {
       .item { grid-template-columns: 1fr; }
       .item img { width: 100%; max-width: 140px; height: auto; aspect-ratio: 1; }
       .repeater-grid { grid-template-columns: 1fr; }
+      .modal-backdrop { padding: 12px; }
+      .modal-header, .modal-body { padding-left: 14px; padding-right: 14px; }
     }
   </style>
 </head>
@@ -290,142 +312,151 @@
       </div>
 
       <section class="tab-panel active" id="panel-agrupaciones">
-        <div class="layout">
-          <section class="panel">
-            <h2 id="groupFormTitle">Añadir agrupación</h2>
-            <p class="helper">Formulario de alta y edición. Los campos de vídeos y libreto se guardan en cada ficha para mostrarse después en la ventana popup del directorio.</p>
-            <form id="groupForm" onsubmit="saveGroup(event)">
-              <input type="hidden" id="groupId">
-
-              <div class="form-group">
-                <label for="groupYear">Año</label>
-                <input type="number" id="groupYear" min="1900" max="2100" required>
-              </div>
-              <div class="form-group">
-                <label for="groupName">Nombre</label>
-                <input type="text" id="groupName" required>
-              </div>
-              <div class="form-group">
-                <label for="groupType">Tipo</label>
-                <select id="groupType" required>
-                  <option value="">Selecciona...</option>
-                  <option value="Chirigota">Chirigota</option>
-                  <option value="Chirigota Infantil">Chirigota Infantil</option>
-                  <option value="Chirigota Juvenil">Chirigota Juvenil</option>
-                  <option value="Comparsa">Comparsa</option>
-                  <option value="Coro">Coro</option>
-                  <option value="Cuarteto">Cuarteto</option>
-                  <option value="Murga">Murga</option>
-                  <option value="Romancero">Romancero</option>
-                  <option value="Romanteto">Romanteto</option>
-                  <option value="Dúo">Dúo</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="groupAuthors">Autores</label>
-                <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
-              </div>
-              <div class="form-group">
-                <label for="groupImage">URL de imagen</label>
-                <input type="url" id="groupImage" placeholder="https://...">
-              </div>
-              <div class="form-group">
-                <label for="groupSourceUrl">URL fuente</label>
-                <input type="url" id="groupSourceUrl" placeholder="https://...">
-              </div>
-              <div class="form-group">
-                <label for="groupNotes">Notas</label>
-                <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
-              </div>
-
-              <div class="section-title">
-                <h3>Vídeos</h3>
-                <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
-              </div>
-              <div id="videosList" class="repeater-list"></div>
-              <div class="form-actions">
-                <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
-              </div>
-
-              <div class="section-title">
-                <h3>Libreto</h3>
-                <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
-              </div>
-              <div id="libretoList" class="repeater-list"></div>
-              <div class="form-actions">
-                <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
-              </div>
-
-              <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Guardar agrupación</button>
-                <button class="btn btn-secondary" type="button" onclick="resetGroupForm()">Limpiar</button>
-              </div>
-            </form>
-            <div id="groupFormStatus" class="status"></div>
-          </section>
-
-          <section class="panel">
-            <h2>Agrupaciones cargadas</h2>
-            <p class="helper">Lista centralizada para buscar, editar y borrar registros. El buscador no distingue tildes.</p>
-            <div class="toolbar">
-              <input type="text" id="searchInput" placeholder="Buscar por nombre..." oninput="renderGroupList()">
-              <select id="yearFilter" onchange="renderGroupList()">
-                <option value="all">Todos los años</option>
-              </select>
-              <select id="typeFilter" onchange="renderGroupList()">
-                <option value="all">Todos los tipos</option>
-              </select>
+        <section class="panel">
+          <div class="toolbar top-buttons">
+            <div>
+              <h2>Agrupaciones cargadas</h2>
+              <p class="helper">Edita en ventana emergente para volver al mismo punto del listado al guardar.</p>
             </div>
-            <div id="groupList" class="list">
-              <div class="empty-state">Cargando agrupaciones...</div>
-            </div>
-          </section>
-        </div>
+            <button class="btn btn-primary" type="button" onclick="openGroupEditor()">+ Añadir agrupación</button>
+          </div>
+          <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre..." oninput="renderGroupList()">
+            <select id="yearFilter" onchange="renderGroupList()">
+              <option value="all">Todos los años</option>
+            </select>
+            <select id="typeFilter" onchange="renderGroupList()">
+              <option value="all">Todos los tipos</option>
+            </select>
+          </div>
+          <div id="groupList" class="list"><div class="empty-state">Cargando agrupaciones...</div></div>
+          <div id="groupListStatus" class="status"></div>
+        </section>
       </section>
 
       <section class="tab-panel" id="panel-pregoneros">
-        <div class="layout">
-          <section class="panel">
-            <h2 id="pregoneroFormTitle">Añadir pregonero</h2>
-            <p class="helper">Formulario básico para gestionar los pregoneros del Carnaval de Ubrique.</p>
-            <form id="pregoneroForm" onsubmit="savePregonero(event)">
-              <input type="hidden" id="pregoneroId">
-              <div class="form-group">
-                <label for="pregoneroYear">Año</label>
-                <input type="number" id="pregoneroYear" min="1900" max="2100" required>
-              </div>
-              <div class="form-group">
-                <label for="pregoneroName">Nombre del pregonero</label>
-                <input type="text" id="pregoneroName" required>
-              </div>
-              <div class="form-group">
-                <label for="pregoneroImage">URL de imagen</label>
-                <input type="url" id="pregoneroImage" placeholder="https://...">
-              </div>
-              <div class="form-actions">
-                <button class="btn btn-primary" type="submit">Guardar pregonero</button>
-                <button class="btn btn-secondary" type="button" onclick="resetPregoneroForm()">Limpiar</button>
-              </div>
-            </form>
-            <div id="pregoneroFormStatus" class="status"></div>
-          </section>
+        <section class="panel">
+          <div class="toolbar top-buttons">
+            <div>
+              <h2>Pregoneros cargados</h2>
+              <p class="helper">Edita en ventana emergente para conservar posición y filtros del listado.</p>
+            </div>
+            <button class="btn btn-primary" type="button" onclick="openPregoneroEditor()">+ Añadir pregonero</button>
+          </div>
+          <div class="toolbar">
+            <input type="text" id="pregoneroSearchInput" placeholder="Buscar por nombre..." oninput="renderPregoneroList()">
+            <select id="pregoneroYearFilter" onchange="renderPregoneroList()">
+              <option value="all">Todos los años</option>
+            </select>
+          </div>
+          <div id="pregoneroList" class="list"><div class="empty-state">Cargando pregoneros...</div></div>
+          <div id="pregoneroListStatus" class="status"></div>
+        </section>
+      </section>
+    </div>
+  </div>
 
-          <section class="panel">
-            <h2>Pregoneros cargados</h2>
-            <p class="helper">Lista de pregoneros para buscar, editar y borrar registros.</p>
-            <div class="toolbar">
-              <input type="text" id="pregoneroSearchInput" placeholder="Buscar por nombre..." oninput="renderPregoneroList()">
-              <select id="pregoneroYearFilter" onchange="renderPregoneroList()">
-                <option value="all">Todos los años</option>
+  <div class="modal-backdrop" id="editorModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title" id="editorTitle">Editar</h2>
+          <p class="modal-subtitle" id="editorSubtitle">Modifica la ficha y guarda para volver al listado.</p>
+        </div>
+        <button class="modal-close" type="button" id="modalCloseBtn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <section id="groupEditorSection">
+          <form id="groupForm" onsubmit="saveGroup(event)">
+            <input type="hidden" id="groupId">
+            <div class="form-group">
+              <label for="groupYear">Año</label>
+              <input type="number" id="groupYear" min="1900" max="2100" required>
+            </div>
+            <div class="form-group">
+              <label for="groupName">Nombre</label>
+              <input type="text" id="groupName" required>
+            </div>
+            <div class="form-group">
+              <label for="groupType">Tipo</label>
+              <select id="groupType" required>
+                <option value="">Selecciona...</option>
+                <option value="Chirigota">Chirigota</option>
+                <option value="Chirigota Infantil">Chirigota Infantil</option>
+                <option value="Chirigota Juvenil">Chirigota Juvenil</option>
+                <option value="Comparsa">Comparsa</option>
+                <option value="Coro">Coro</option>
+                <option value="Cuarteto">Cuarteto</option>
+                <option value="Murga">Murga</option>
+                <option value="Romancero">Romancero</option>
+                <option value="Romanteto">Romanteto</option>
+                <option value="Dúo">Dúo</option>
+                <option value="Otro">Otro</option>
               </select>
             </div>
-            <div id="pregoneroList" class="list">
-              <div class="empty-state">Cargando pregoneros...</div>
+            <div class="form-group">
+              <label for="groupAuthors">Autores</label>
+              <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
             </div>
-          </section>
-        </div>
-      </section>
+            <div class="form-group">
+              <label for="groupImage">URL de imagen</label>
+              <input type="url" id="groupImage" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label for="groupSourceUrl">URL fuente</label>
+              <input type="url" id="groupSourceUrl" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label for="groupNotes">Notas</label>
+              <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
+            </div>
+            <div class="section-title">
+              <h3>Vídeos</h3>
+              <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
+            </div>
+            <div id="videosList" class="repeater-list"></div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
+            </div>
+            <div class="section-title">
+              <h3>Libreto</h3>
+              <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
+            </div>
+            <div id="libretoList" class="repeater-list"></div>
+            <div class="form-actions">
+              <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Guardar agrupación</button>
+              <button class="btn btn-secondary" type="button" onclick="resetGroupForm()">Limpiar</button>
+            </div>
+          </form>
+          <div id="groupFormStatus" class="status"></div>
+        </section>
+
+        <section id="pregoneroEditorSection" style="display:none;">
+          <form id="pregoneroForm" onsubmit="savePregonero(event)">
+            <input type="hidden" id="pregoneroId">
+            <div class="form-group">
+              <label for="pregoneroYear">Año</label>
+              <input type="number" id="pregoneroYear" min="1900" max="2100" required>
+            </div>
+            <div class="form-group">
+              <label for="pregoneroName">Nombre del pregonero</label>
+              <input type="text" id="pregoneroName" required>
+            </div>
+            <div class="form-group">
+              <label for="pregoneroImage">URL de imagen</label>
+              <input type="url" id="pregoneroImage" placeholder="https://...">
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Guardar pregonero</button>
+              <button class="btn btn-secondary" type="button" onclick="resetPregoneroForm()">Limpiar</button>
+            </div>
+          </form>
+          <div id="pregoneroFormStatus" class="status"></div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -451,6 +482,8 @@
     let groups = [];
     let pregoneros = [];
     let userLoggedIn = false;
+    let modalMode = 'group';
+    let lastScrollY = 0;
 
     const yearFilter = document.getElementById("yearFilter");
     const typeFilter = document.getElementById("typeFilter");
@@ -464,6 +497,69 @@
     const authBtn = document.getElementById("authBtn");
     const videosList = document.getElementById("videosList");
     const libretoList = document.getElementById("libretoList");
+    const editorModal = document.getElementById('editorModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const editorTitle = document.getElementById('editorTitle');
+    const editorSubtitle = document.getElementById('editorSubtitle');
+    const groupEditorSection = document.getElementById('groupEditorSection');
+    const pregoneroEditorSection = document.getElementById('pregoneroEditorSection');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function normalizeText(text) {
+      return (text || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+    }
+    function safeArray(value) { return Array.isArray(value) ? value : []; }
+    function setStatus(id, message, type) {
+      const el = document.getElementById(id);
+      el.className = 'status';
+      if (!message) {
+        el.textContent = '';
+        return;
+      }
+      el.textContent = message;
+      el.classList.add(type);
+    }
+    function setLoginStatus(message, type) { setStatus('loginStatus', message, type); }
+    function setListStatus(kind, message, type) {
+      setStatus(kind === 'group' ? 'groupListStatus' : 'pregoneroListStatus', message, type);
+    }
+
+    function openEditor(mode) {
+      modalMode = mode;
+      lastScrollY = window.scrollY;
+      groupEditorSection.style.display = mode === 'group' ? 'block' : 'none';
+      pregoneroEditorSection.style.display = mode === 'pregonero' ? 'block' : 'none';
+      editorTitle.textContent = mode === 'group' ? 'Editar agrupación' : 'Editar pregonero';
+      editorSubtitle.textContent = mode === 'group'
+        ? 'Guarda los cambios y volverás al mismo punto del listado.'
+        : 'Guarda los cambios y seguirás en el mismo punto del listado.';
+      editorModal.classList.add('open');
+      editorModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+    function closeEditor() {
+      editorModal.classList.remove('open');
+      editorModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      requestAnimationFrame(() => window.scrollTo({ top: lastScrollY, behavior: 'instant' }));
+    }
+    modalCloseBtn.addEventListener('click', closeEditor);
+    editorModal.addEventListener('click', (e) => { if (e.target === editorModal) closeEditor(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && editorModal.classList.contains('open')) closeEditor();
+    });
 
     document.querySelector('.tabs').addEventListener('click', (e) => {
       const btn = e.target.closest('.tab-btn');
@@ -480,7 +576,6 @@
       populateTypeFilter();
       renderGroupList();
     });
-
     onSnapshot(collection(db, "pregoneros"), (snapshot) => {
       pregoneros = [];
       snapshot.forEach((docItem) => pregoneros.push({ id: docItem.id, ...docItem.data() }));
@@ -506,41 +601,6 @@
       }
     });
 
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function normalizeText(text) {
-      return (text || '')
-        .toString()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim();
-    }
-
-    function safeArray(value) { return Array.isArray(value) ? value : []; }
-
-    function setStatus(id, message, type) {
-      const el = document.getElementById(id);
-      el.className = 'status';
-      if (!message) {
-        el.textContent = '';
-        return;
-      }
-      el.textContent = message;
-      el.classList.add(type);
-    }
-
-    function setLoginStatus(message, type) {
-      setStatus('loginStatus', message, type);
-    }
-
     function collectVideos() {
       return [...videosList.querySelectorAll('.repeater-item')].map(item => ({
         title: item.querySelector('[data-field="title"]').value.trim(),
@@ -548,7 +608,6 @@
         description: item.querySelector('[data-field="description"]').value.trim()
       })).filter(item => item.title || item.url || item.description);
     }
-
     function collectLibreto() {
       return [...libretoList.querySelectorAll('.repeater-item')].map(item => ({
         type: item.querySelector('[data-field="type"]').value.trim(),
@@ -556,7 +615,6 @@
         text: item.querySelector('[data-field="text"]').value.trim()
       })).filter(item => item.type || item.title || item.text);
     }
-
     function renderVideoItem(data = {}) {
       const wrapper = document.createElement('div');
       wrapper.className = 'repeater-item';
@@ -577,12 +635,10 @@
         </div>
         <div class="repeater-actions">
           <button class="btn btn-danger btn-small" type="button">Eliminar vídeo</button>
-        </div>
-      `;
+        </div>`;
       wrapper.querySelector('button').addEventListener('click', () => wrapper.remove());
       return wrapper;
     }
-
     function renderLibretoItem(data = {}) {
       const wrapper = document.createElement('div');
       wrapper.className = 'repeater-item';
@@ -603,12 +659,10 @@
         </div>
         <div class="repeater-actions">
           <button class="btn btn-danger btn-small" type="button">Eliminar letra</button>
-        </div>
-      `;
+        </div>`;
       wrapper.querySelector('button').addEventListener('click', () => wrapper.remove());
       return wrapper;
     }
-
     window.addVideoItem = function(data = {}) { videosList.appendChild(renderVideoItem(data)); };
     window.addLibretoItem = function(data = {}) { libretoList.appendChild(renderLibretoItem(data)); };
 
@@ -618,14 +672,12 @@
       yearFilter.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
       yearFilter.value = years.includes(currentValue) ? currentValue : 'all';
     }
-
     function populateTypeFilter() {
       const currentValue = typeFilter.value;
       const types = [...new Set(groups.map(g => (g.type || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
       typeFilter.innerHTML = '<option value="all">Todos los tipos</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
       typeFilter.value = types.includes(currentValue) ? currentValue : 'all';
     }
-
     function populatePregoneroYearFilter() {
       const currentValue = pregoneroYearFilter.value;
       const years = [...new Set(pregoneros.map(item => String(item.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
@@ -650,7 +702,6 @@
         return (a.name || '').localeCompare((b.name || ''), 'es');
       });
     }
-
     function filteredPregoneros() {
       const search = normalizeText(pregoneroSearchInput.value);
       const year = pregoneroYearFilter.value;
@@ -683,24 +734,19 @@
             <div class="item-content">
               <h3>${escapeHtml(group.name || 'Sin nombre')}</h3>
               <div class="item-meta">
-                <p>
-                  <span class="mini-badge">${escapeHtml(group.year || '-')}</span>
-                  <span class="mini-badge">${escapeHtml(group.type || '-')}</span>
-                </p>
+                <p><span class="mini-badge">${escapeHtml(group.year || '-')}</span><span class="mini-badge">${escapeHtml(group.type || '-')}</span></p>
                 <p><strong>Autores:</strong> ${escapeHtml(group.authors || 'Pendiente')}</p>
                 <p><span class="mini-badge">Vídeos: ${videoCount}</span><span class="mini-badge">Letras: ${libretoCount}</span></p>
                 ${group.notes ? `<p>${escapeHtml(group.notes)}</p>` : ''}
               </div>
               <div class="item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editGroup('${group.id}')">Editar</button>
+                <button class="btn btn-secondary btn-small" onclick="openGroupEditor('${group.id}')">Editar</button>
                 <button class="btn btn-danger btn-small" onclick="removeGroup('${group.id}')">Borrar</button>
               </div>
             </div>
-          </article>
-        `;
+          </article>`;
       }).join('');
     };
-
     window.renderPregoneroList = function() {
       if (!userLoggedIn) {
         pregoneroList.innerHTML = '<div class="empty-state">Inicia sesión para ver y gestionar los pregoneros.</div>';
@@ -716,16 +762,13 @@
           <img src="${escapeHtml(item.image || 'https://placehold.co/200x200?text=Sin+imagen')}" alt="Imagen de ${escapeHtml(item.name || 'pregonero')}" onerror="this.src='https://placehold.co/200x200?text=Sin+imagen'">
           <div class="item-content">
             <h3>${escapeHtml(item.name || 'Sin nombre')}</h3>
-            <div class="item-meta">
-              <p><span class="mini-badge">${escapeHtml(item.year || '-')}</span></p>
-            </div>
+            <div class="item-meta"><p><span class="mini-badge">${escapeHtml(item.year || '-')}</span></p></div>
             <div class="item-actions">
-              <button class="btn btn-secondary btn-small" onclick="editPregonero('${item.id}')">Editar</button>
+              <button class="btn btn-secondary btn-small" onclick="openPregoneroEditor('${item.id}')">Editar</button>
               <button class="btn btn-danger btn-small" onclick="removePregonero('${item.id}')">Borrar</button>
             </div>
           </div>
-        </article>
-      `).join('');
+        </article>`).join('');
     };
 
     window.login = async function() {
@@ -740,13 +783,13 @@
         setLoginStatus('Error de autenticación: ' + error.message, 'error');
       }
     };
-
     window.handleAuthClick = async function() {
       if (userLoggedIn) {
         try {
           await signOut(auth);
           resetGroupForm(false);
           resetPregoneroForm(false);
+          closeEditor();
           setLoginStatus('Sesión cerrada correctamente.', 'success');
         } catch (error) {
           setLoginStatus('Error al cerrar sesión: ' + error.message, 'error');
@@ -782,17 +825,17 @@
       try {
         if (id) {
           await updateDoc(doc(db, 'agrupaciones', id), payload);
-          setStatus('groupFormStatus', 'Agrupación actualizada correctamente.', 'success');
+          setListStatus('group', 'Agrupación actualizada correctamente.', 'success');
         } else {
           await addDoc(collection(db, 'agrupaciones'), { ...payload, createdAt: serverTimestamp() });
-          setStatus('groupFormStatus', 'Agrupación añadida correctamente.', 'success');
+          setListStatus('group', 'Agrupación añadida correctamente.', 'success');
         }
         resetGroupForm(false);
+        closeEditor();
       } catch (error) {
         setStatus('groupFormStatus', 'Error al guardar: ' + error.message, 'error');
       }
     };
-
     window.savePregonero = async function(event) {
       event.preventDefault();
       if (!userLoggedIn) {
@@ -809,103 +852,102 @@
       try {
         if (id) {
           await updateDoc(doc(db, 'pregoneros', id), payload);
-          setStatus('pregoneroFormStatus', 'Pregonero actualizado correctamente.', 'success');
+          setListStatus('pregonero', 'Pregonero actualizado correctamente.', 'success');
         } else {
           await addDoc(collection(db, 'pregoneros'), { ...payload, createdAt: serverTimestamp() });
-          setStatus('pregoneroFormStatus', 'Pregonero añadido correctamente.', 'success');
+          setListStatus('pregonero', 'Pregonero añadido correctamente.', 'success');
         }
         resetPregoneroForm(false);
+        closeEditor();
       } catch (error) {
         setStatus('pregoneroFormStatus', 'Error al guardar: ' + error.message, 'error');
       }
     };
 
-    window.editGroup = function(id) {
-      if (!userLoggedIn) return;
-      const group = groups.find(g => g.id === id);
-      if (!group) return;
-      document.getElementById('groupId').value = group.id;
-      document.getElementById('groupYear').value = group.year || '';
-      document.getElementById('groupName').value = group.name || '';
-      document.getElementById('groupType').value = group.type || '';
-      document.getElementById('groupAuthors').value = group.authors || '';
-      document.getElementById('groupImage').value = group.image || '';
-      document.getElementById('groupSourceUrl').value = group.sourceUrl || '';
-      document.getElementById('groupNotes').value = group.notes || '';
+    function fillGroupForm(group = null) {
+      document.getElementById('groupId').value = group?.id || '';
+      document.getElementById('groupYear').value = group?.year || '';
+      document.getElementById('groupName').value = group?.name || '';
+      document.getElementById('groupType').value = group?.type || '';
+      document.getElementById('groupAuthors').value = group?.authors || '';
+      document.getElementById('groupImage').value = group?.image || '';
+      document.getElementById('groupSourceUrl').value = group?.sourceUrl || '';
+      document.getElementById('groupNotes').value = group?.notes || '';
       videosList.innerHTML = '';
       libretoList.innerHTML = '';
-      const groupVideos = safeArray(group.videos).filter(v => v?.url || v?.title || v?.description);
-      const groupLibreto = safeArray(group.libreto).filter(l => l?.type || l?.title || l?.text);
+      const groupVideos = safeArray(group?.videos).filter(v => v?.url || v?.title || v?.description);
+      const groupLibreto = safeArray(group?.libreto).filter(l => l?.type || l?.title || l?.text);
       if (groupVideos.length) groupVideos.forEach(video => addVideoItem(video));
-      else if ((group.youtube || '').trim()) addVideoItem({ title: 'Vídeo principal', url: group.youtube, description: '' });
+      else if ((group?.youtube || '').trim()) addVideoItem({ title: 'Vídeo principal', url: group.youtube, description: '' });
       else addVideoItem();
       if (groupLibreto.length) groupLibreto.forEach(item => addLibretoItem(item));
       else addLibretoItem();
-      document.getElementById('groupFormTitle').textContent = 'Editar agrupación';
       setStatus('groupFormStatus', '', '');
-      document.querySelector('[data-tab="agrupaciones"]').click();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.editPregonero = function(id) {
-      if (!userLoggedIn) return;
-      const item = pregoneros.find(p => p.id === id);
-      if (!item) return;
-      document.getElementById('pregoneroId').value = item.id;
-      document.getElementById('pregoneroYear').value = item.year || '';
-      document.getElementById('pregoneroName').value = item.name || '';
-      document.getElementById('pregoneroImage').value = item.image || '';
-      document.getElementById('pregoneroFormTitle').textContent = 'Editar pregonero';
+      editorTitle.textContent = group ? 'Editar agrupación' : 'Añadir agrupación';
+    }
+    function fillPregoneroForm(item = null) {
+      document.getElementById('pregoneroId').value = item?.id || '';
+      document.getElementById('pregoneroYear').value = item?.year || '';
+      document.getElementById('pregoneroName').value = item?.name || '';
+      document.getElementById('pregoneroImage').value = item?.image || '';
       setStatus('pregoneroFormStatus', '', '');
+      editorTitle.textContent = item ? 'Editar pregonero' : 'Añadir pregonero';
+    }
+
+    window.openGroupEditor = function(id = '') {
+      if (!userLoggedIn) return;
+      const group = id ? groups.find(g => g.id === id) : null;
+      fillGroupForm(group || null);
+      document.querySelector('[data-tab="agrupaciones"]').click();
+      openEditor('group');
+    };
+    window.openPregoneroEditor = function(id = '') {
+      if (!userLoggedIn) return;
+      const item = id ? pregoneros.find(p => p.id === id) : null;
+      fillPregoneroForm(item || null);
       document.querySelector('[data-tab="pregoneros"]').click();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      openEditor('pregonero');
     };
 
     window.removeGroup = async function(id) {
       if (!userLoggedIn) {
-        setStatus('groupFormStatus', 'Debes iniciar sesión para borrar registros.', 'error');
+        setListStatus('group', 'Debes iniciar sesión para borrar registros.', 'error');
         return;
       }
       if (!confirm('¿Seguro que quieres borrar esta agrupación?')) return;
       try {
         await deleteDoc(doc(db, 'agrupaciones', id));
-        setStatus('groupFormStatus', 'Agrupación eliminada correctamente.', 'success');
-        if (document.getElementById('groupId').value === id) resetGroupForm(false);
+        setListStatus('group', 'Agrupación eliminada correctamente.', 'success');
       } catch (error) {
-        setStatus('groupFormStatus', 'Error al borrar: ' + error.message, 'error');
+        setListStatus('group', 'Error al borrar: ' + error.message, 'error');
       }
     };
-
     window.removePregonero = async function(id) {
       if (!userLoggedIn) {
-        setStatus('pregoneroFormStatus', 'Debes iniciar sesión para borrar registros.', 'error');
+        setListStatus('pregonero', 'Debes iniciar sesión para borrar registros.', 'error');
         return;
       }
       if (!confirm('¿Seguro que quieres borrar este pregonero?')) return;
       try {
         await deleteDoc(doc(db, 'pregoneros', id));
-        setStatus('pregoneroFormStatus', 'Pregonero eliminado correctamente.', 'success');
-        if (document.getElementById('pregoneroId').value === id) resetPregoneroForm(false);
+        setListStatus('pregonero', 'Pregonero eliminado correctamente.', 'success');
       } catch (error) {
-        setStatus('pregoneroFormStatus', 'Error al borrar: ' + error.message, 'error');
+        setListStatus('pregonero', 'Error al borrar: ' + error.message, 'error');
       }
     };
 
     window.resetGroupForm = function(clearStatus = true) {
       document.getElementById('groupForm').reset();
       document.getElementById('groupId').value = '';
-      document.getElementById('groupFormTitle').textContent = 'Añadir agrupación';
       videosList.innerHTML = '';
       libretoList.innerHTML = '';
       addVideoItem();
       addLibretoItem();
       if (clearStatus) setStatus('groupFormStatus', '', '');
     };
-
     window.resetPregoneroForm = function(clearStatus = true) {
       document.getElementById('pregoneroForm').reset();
       document.getElementById('pregoneroId').value = '';
-      document.getElementById('pregoneroFormTitle').textContent = 'Añadir pregonero';
       if (clearStatus) setStatus('pregoneroFormStatus', '', '');
     };
 
