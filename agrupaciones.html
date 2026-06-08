@@ -9,16 +9,16 @@
       --bg: #0f172a;
       --panel: #111827;
       --panel-2: #1f2937;
+      --panel-3: #0b1220;
       --text: #e5e7eb;
       --muted: #9ca3af;
       --accent: #f59e0b;
       --accent-hover: #fbbf24;
       --border: rgba(255,255,255,0.08);
       --radius: 14px;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
@@ -26,13 +26,12 @@
       min-height: 100vh;
       padding: 0 20px;
     }
-
+    body.modal-open { overflow: hidden; }
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding-bottom: 40px;
     }
-
     header {
       display: flex;
       justify-content: space-between;
@@ -43,21 +42,17 @@
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
-
     h1 { font-size: 1.9rem; }
-
     .subtitle {
       color: var(--muted);
       margin-top: 6px;
       font-size: 0.96rem;
     }
-
     .nav-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -69,21 +64,21 @@
       border-radius: 12px;
       font-weight: 700;
       transition: 0.2s ease;
+      font: inherit;
     }
-
     .btn-primary {
       background: var(--accent);
       color: #111827;
     }
-
     .btn-primary:hover { background: var(--accent-hover); }
-
     .btn-secondary {
       background: rgba(255,255,255,0.08);
       color: var(--text);
       border: 1px solid var(--border);
     }
-
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.12);
+    }
     .filters {
       display: flex;
       gap: 12px;
@@ -94,30 +89,33 @@
       padding: 16px;
       margin-bottom: 24px;
     }
-
-    input, select {
-      background: #0b1220;
+    input, select, textarea {
+      background: var(--panel-3);
       color: var(--text);
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 10px;
       padding: 10px 14px;
       outline: none;
+      font: inherit;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .filters input, .filters select {
       min-width: 160px;
       flex: 1;
     }
-
     .results-meta {
       color: var(--muted);
       margin-bottom: 16px;
       font-size: 0.94rem;
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px;
     }
-
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -126,21 +124,29 @@
       display: flex;
       flex-direction: column;
       min-height: 100%;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
-
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.24);
+    }
+    .card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
     .card-cover {
       aspect-ratio: 16 / 10;
       background: #1f2937;
       overflow: hidden;
     }
-
     .card-cover img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-
     .card-body {
       padding: 16px;
       display: flex;
@@ -148,7 +154,6 @@
       gap: 10px;
       flex: 1;
     }
-
     .year-badge {
       display: inline-flex;
       align-items: center;
@@ -160,20 +165,17 @@
       font-size: 0.8rem;
       font-weight: 700;
     }
-
     .name {
       font-size: 1.08rem;
       line-height: 1.3;
       color: var(--text);
       font-weight: 800;
     }
-
     .meta, .authors {
       color: var(--muted);
       font-size: 0.92rem;
       line-height: 1.45;
     }
-
     .pill {
       display: inline-flex;
       align-items: center;
@@ -185,7 +187,6 @@
       font-size: 0.78rem;
       font-weight: 700;
     }
-
     .links {
       margin-top: auto;
       display: flex;
@@ -193,7 +194,6 @@
       flex-wrap: wrap;
       padding-top: 4px;
     }
-
     .link {
       text-decoration: none;
       padding: 8px 10px;
@@ -203,7 +203,6 @@
       font-size: 0.86rem;
       font-weight: 700;
     }
-
     .empty-state {
       background: rgba(255,255,255,0.03);
       border: 1px dashed rgba(255,255,255,0.15);
@@ -213,9 +212,198 @@
       color: var(--muted);
     }
 
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(100%, 980px);
+      max-height: calc(100vh - 40px);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(11,18,32,0.98));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 20px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title-wrap {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+    .modal-title {
+      font-size: 1.4rem;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+    .modal-subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .modal-close {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      overflow: auto;
+      padding: 0 20px 20px;
+    }
+    .modal-hero {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .modal-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 16px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+    .modal-summary {
+      display: grid;
+      gap: 12px;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .modal-notes {
+      color: var(--muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: rgba(245, 158, 11, 0.13);
+      color: var(--accent);
+      border-color: rgba(245, 158, 11, 0.24);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .data-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      gap: 6px;
+    }
+    .data-card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .data-card .value {
+      color: var(--text);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .section-stack {
+      display: grid;
+      gap: 14px;
+    }
+    .content-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .content-card h3 {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    .video-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      border-radius: 12px;
+      background: #000;
+    }
+    .content-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .lyrics-text {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .modal-hero {
+        grid-template-columns: 1fr;
+      }
+    }
     @media (max-width: 768px) {
       .filters { flex-direction: column; }
-      input, select { width: 100%; }
+      .filters input, .filters select { width: 100%; }
+      .modal-backdrop { padding: 12px; }
+      .modal-header, .modal-body { padding-left: 14px; padding-right: 14px; }
     }
   </style>
 </head>
@@ -224,7 +412,7 @@
     <header>
       <div>
         <h1>Directorio de agrupaciones</h1>
-        <p class="subtitle">Consulta agrupaciones del Carnaval de Ubrique por año, nombre y tipo.</p>
+        <p class="subtitle">Consulta agrupaciones del Carnaval de Ubrique por año, nombre y tipo. Pulsa sobre una ficha para ver los datos, vídeos y libreto.</p>
       </div>
       <div class="nav-actions">
         <a class="btn btn-secondary" href="index.html">Inicio</a>
@@ -233,7 +421,7 @@
     </header>
 
     <section class="filters">
-      <input type="text" id="searchName" placeholder="🔎 Buscar por nombre..." />
+      <input type="text" id="searchName" placeholder="🔎 Buscar por nombre...">
       <select id="filterYear">
         <option value="all">Todos los años</option>
       </select>
@@ -247,25 +435,55 @@
     <main class="grid" id="groupGrid"></main>
   </div>
 
+  <div class="modal-backdrop" id="groupModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title" id="modalTitle">Ficha de agrupación</h2>
+          <p class="modal-subtitle" id="modalSubtitle"></p>
+        </div>
+        <button class="modal-close" type="button" id="modalCloseBtn" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-hero">
+          <img class="modal-image" id="modalImage" src="https://placehold.co/800x500?text=Carnaval+de+Ubrique" alt="Imagen de la agrupación" onerror="this.src='https://placehold.co/800x500?text=Sin+imagen'">
+          <div class="modal-summary">
+            <div class="stats" id="modalStats"></div>
+            <p class="modal-notes" id="modalNotes"></p>
+          </div>
+        </div>
+
+        <div class="tab-bar" id="tabBar">
+          <button class="tab-btn active" type="button" data-tab="datos">Datos</button>
+          <button class="tab-btn" type="button" data-tab="videos">Vídeos</button>
+          <button class="tab-btn" type="button" data-tab="libreto">Libreto</button>
+        </div>
+
+        <section class="tab-panel active" id="tab-datos"></section>
+        <section class="tab-panel" id="tab-videos"></section>
+        <section class="tab-panel" id="tab-libreto"></section>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Sustituye estos valores por los de tu proyecto de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
-    authDomain: "carnavalubrique.firebaseapp.com",
-    projectId: "carnavalubrique",
-    storageBucket: "carnavalubrique.firebasestorage.app",
-    messagingSenderId: "925068714888",
-    appId: "1:925068714888:web:cc2f7f3ca165515907903d",
-    measurementId: "G-LT0TP9BWSR"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
+      authDomain: "carnavalubrique.firebaseapp.com",
+      projectId: "carnavalubrique",
+      storageBucket: "carnavalubrique.firebasestorage.app",
+      messagingSenderId: "925068714888",
+      appId: "1:925068714888:web:cc2f7f3ca165515907903d",
+      measurementId: "G-LT0TP9BWSR"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     let groups = [];
+    let currentGroup = null;
 
     const nameInput = document.getElementById('searchName');
     const yearSelect = document.getElementById('filterYear');
@@ -273,32 +491,71 @@ const firebaseConfig = {
     const grid = document.getElementById('groupGrid');
     const resultsMeta = document.getElementById('resultsMeta');
 
+    const modal = document.getElementById('groupModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalImage = document.getElementById('modalImage');
+    const modalStats = document.getElementById('modalStats');
+    const modalNotes = document.getElementById('modalNotes');
+    const tabDatos = document.getElementById('tab-datos');
+    const tabVideos = document.getElementById('tab-videos');
+    const tabLibreto = document.getElementById('tab-libreto');
+
     nameInput.addEventListener('input', renderGroups);
     yearSelect.addEventListener('change', renderGroups);
     typeSelect.addEventListener('change', renderGroups);
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) {
+        closeModal();
+      }
+    });
+
+    document.getElementById('tabBar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      activateTab(btn.dataset.tab);
+    });
 
     onSnapshot(collection(db, 'agrupaciones'), (snapshot) => {
       groups = [];
       snapshot.forEach((doc) => groups.push({ id: doc.id, ...doc.data() }));
       populateFilters();
       renderGroups();
+
+      if (currentGroup) {
+        const updated = groups.find(g => g.id === currentGroup.id);
+        if (updated) {
+          currentGroup = updated;
+          populateModal(updated);
+        } else {
+          closeModal();
+        }
+      }
     });
 
     function populateFilters() {
+      const currentYear = yearSelect.value;
+      const currentType = typeSelect.value;
       const years = [...new Set(groups.map(g => String(g.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
       const types = [...new Set(groups.map(g => (g.type || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
-
-      yearSelect.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-      typeSelect.innerHTML = '<option value="all">Todos los tipos</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+      yearSelect.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+      typeSelect.innerHTML = '<option value="all">Todos los tipos</option>' + types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      yearSelect.value = years.includes(currentYear) ? currentYear : 'all';
+      typeSelect.value = types.includes(currentType) ? currentType : 'all';
     }
 
     function getFilteredGroups() {
-      const text = nameInput.value.toLowerCase().trim();
+      const text = normalizeText(nameInput.value);
       const year = yearSelect.value;
       const type = typeSelect.value;
-
       return groups.filter(group => {
-        const matchesText = !text || (group.name && group.name.toLowerCase().includes(text));
+        const matchesText = !text || normalizeText(group.name).includes(text);
         const matchesYear = year === 'all' || String(group.year) === year;
         const matchesType = type === 'all' || (group.type || '') === type;
         return matchesText && matchesYear && matchesType;
@@ -308,40 +565,237 @@ const firebaseConfig = {
       });
     }
 
+    function normalizeText(text) {
+      return (text || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function safeArray(value) {
+      return Array.isArray(value) ? value : [];
+    }
+
+    function extractYouTubeId(url) {
+      if (!url) return '';
+      try {
+        const parsed = new URL(url);
+        if (parsed.hostname.includes('youtu.be')) {
+          return parsed.pathname.replace(/^\//, '').split('/')[0];
+        }
+        if (parsed.searchParams.get('v')) {
+          return parsed.searchParams.get('v');
+        }
+        const pathParts = parsed.pathname.split('/').filter(Boolean);
+        const embedIndex = pathParts.indexOf('embed');
+        if (embedIndex >= 0 && pathParts[embedIndex + 1]) return pathParts[embedIndex + 1];
+        const shortsIndex = pathParts.indexOf('shorts');
+        if (shortsIndex >= 0 && pathParts[shortsIndex + 1]) return pathParts[shortsIndex + 1];
+        return '';
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function getGroupVideos(group) {
+      const videos = safeArray(group.videos)
+        .map(item => ({
+          title: (item?.title || '').trim(),
+          url: (item?.url || '').trim(),
+          description: (item?.description || '').trim()
+        }))
+        .filter(item => item.url);
+
+      if (!videos.length && group.youtube) {
+        videos.push({
+          title: 'Vídeo principal',
+          url: group.youtube,
+          description: ''
+        });
+      }
+      return videos;
+    }
+
+    function getGroupLyrics(group) {
+      return safeArray(group.libreto)
+        .map(item => ({
+          type: (item?.type || '').trim(),
+          title: (item?.title || '').trim(),
+          text: (item?.text || '').trim()
+        }))
+        .filter(item => item.type || item.title || item.text);
+    }
+
     window.clearFilters = function() {
       nameInput.value = '';
       yearSelect.value = 'all';
       typeSelect.value = 'all';
       renderGroups();
-    }
+    };
 
     function renderGroups() {
       const filtered = getFilteredGroups();
       resultsMeta.textContent = `${filtered.length} agrupación(es) encontradas`;
-
       if (!filtered.length) {
         grid.innerHTML = '<div class="empty-state">No hay agrupaciones que coincidan con los filtros actuales.</div>';
         return;
       }
-
-      grid.innerHTML = filtered.map(group => `
-        <article class="card">
-          <div class="card-cover">
-            <img src="${group.image || 'https://placehold.co/800x500?text=Carnaval+de+Ubrique'}" alt="Imagen de ${group.name || 'agrupación'}" onerror="this.src='https://placehold.co/800x500?text=Sin+imagen'">
-          </div>
-          <div class="card-body">
-            <span class="year-badge">${group.year || 'Sin año'}</span>
-            <h2 class="name">${group.name || 'Sin nombre'}</h2>
-            <span class="pill">${group.type || 'Sin tipo'}</span>
-            <p class="authors"><strong>Autores:</strong> ${group.authors || 'Pendiente de completar'}</p>
-            <p class="meta">${group.notes || ''}</p>
-            <div class="links">
-              ${group.youtube ? `<a class="link" target="_blank" rel="noopener noreferrer" href="${group.youtube}">YouTube</a>` : ''}
-              ${group.sourceUrl ? `<a class="link" target="_blank" rel="noopener noreferrer" href="${group.sourceUrl}">Fuente</a>` : ''}
+      grid.innerHTML = filtered.map(group => {
+        const notes = (group.notes || '').trim();
+        const sourceLink = group.sourceUrl ? `<a class="link" target="_blank" rel="noopener noreferrer" href="${escapeHtml(group.sourceUrl)}" onclick="event.stopPropagation()">Fuente</a>` : '';
+        return `
+          <article class="card" role="button" tabindex="0" data-id="${escapeHtml(group.id)}" aria-label="Abrir ficha de ${escapeHtml(group.name || 'agrupación')}">
+            <div class="card-cover">
+              <img src="${escapeHtml(group.image || 'https://placehold.co/800x500?text=Carnaval+de+Ubrique')}" alt="Imagen de ${escapeHtml(group.name || 'agrupación')}" onerror="this.src='https://placehold.co/800x500?text=Sin+imagen'">
             </div>
+            <div class="card-body">
+              <span class="year-badge">${escapeHtml(group.year || 'Sin año')}</span>
+              <h2 class="name">${escapeHtml(group.name || 'Sin nombre')}</h2>
+              <span class="pill">${escapeHtml(group.type || 'Sin tipo')}</span>
+              <p class="authors"><strong>Autores:</strong> ${escapeHtml(group.authors || 'Pendiente de completar')}</p>
+              <p class="meta">${escapeHtml(notes || 'Pulsa para consultar la ficha completa de la agrupación.')}</p>
+              <div class="links">${sourceLink}</div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => openGroup(card.dataset.id));
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openGroup(card.dataset.id);
+          }
+        });
+      });
+    }
+
+    function openGroup(id) {
+      const group = groups.find(item => item.id === id);
+      if (!group) return;
+      currentGroup = group;
+      populateModal(group);
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      activateTab('datos');
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    }
+
+    function activateTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === `tab-${tabName}`);
+      });
+    }
+
+    function populateModal(group) {
+      const videos = getGroupVideos(group);
+      const lyrics = getGroupLyrics(group);
+
+      modalTitle.textContent = group.name || 'Sin nombre';
+      modalSubtitle.textContent = [group.type || 'Sin tipo', group.year || 'Sin año'].join(' · ');
+      modalImage.src = group.image || 'https://placehold.co/800x500?text=Carnaval+de+Ubrique';
+      modalImage.alt = `Imagen de ${group.name || 'agrupación'}`;
+      modalNotes.textContent = (group.notes || '').trim() || 'Sin observaciones adicionales registradas.';
+
+      const stats = [
+        group.year ? `Año: ${group.year}` : '',
+        group.type ? `Tipo: ${group.type}` : '',
+        group.authors ? `Autores: ${group.authors}` : '',
+        videos.length ? `${videos.length} vídeo(s)` : 'Sin vídeos',
+        lyrics.length ? `${lyrics.length} letra(s)` : 'Sin libreto'
+      ].filter(Boolean);
+      modalStats.innerHTML = stats.map(item => `<span class="stat-pill">${escapeHtml(item)}</span>`).join('');
+
+      const sourceCard = group.sourceUrl ? `
+        <div class="data-card">
+          <span class="label">Fuente</span>
+          <div class="value"><a class="link" href="${escapeHtml(group.sourceUrl)}" target="_blank" rel="noopener noreferrer">Abrir enlace original</a></div>
+        </div>
+      ` : '';
+
+      tabDatos.innerHTML = `
+        <div class="data-grid">
+          <div class="data-card">
+            <span class="label">Nombre</span>
+            <div class="value">${escapeHtml(group.name || 'Sin nombre')}</div>
           </div>
-        </article>
-      `).join('');
+          <div class="data-card">
+            <span class="label">Año</span>
+            <div class="value">${escapeHtml(group.year || 'Sin año')}</div>
+          </div>
+          <div class="data-card">
+            <span class="label">Tipo</span>
+            <div class="value">${escapeHtml(group.type || 'Sin tipo')}</div>
+          </div>
+          <div class="data-card">
+            <span class="label">Autores</span>
+            <div class="value">${escapeHtml(group.authors || 'Pendiente de completar')}</div>
+          </div>
+          <div class="data-card">
+            <span class="label">Notas</span>
+            <div class="value">${escapeHtml(group.notes || 'Sin notas')}</div>
+          </div>
+          ${sourceCard}
+        </div>
+      `;
+
+      if (!videos.length) {
+        tabVideos.innerHTML = '<div class="empty-state">Todavía no hay vídeos asociados a esta agrupación.</div>';
+      } else {
+        tabVideos.innerHTML = `
+          <div class="section-stack">
+            ${videos.map(video => {
+              const videoId = extractYouTubeId(video.url);
+              const embed = videoId ? `<iframe class="video-frame" src="https://www.youtube.com/embed/${escapeHtml(videoId)}" title="${escapeHtml(video.title || 'Vídeo de YouTube')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>` : '';
+              return `
+                <article class="content-card">
+                  <h3>${escapeHtml(video.title || 'Vídeo sin título')}</h3>
+                  ${embed || `<p class="content-meta">No se ha podido incrustar el vídeo, pero puedes abrirlo directamente.</p>`}
+                  ${video.description ? `<p class="content-meta">${escapeHtml(video.description)}</p>` : ''}
+                  <div><a class="link" href="${escapeHtml(video.url)}" target="_blank" rel="noopener noreferrer">Abrir en YouTube</a></div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      if (!lyrics.length) {
+        tabLibreto.innerHTML = '<div class="empty-state">Todavía no hay letras cargadas para esta agrupación.</div>';
+      } else {
+        tabLibreto.innerHTML = `
+          <div class="section-stack">
+            ${lyrics.map(item => `
+              <article class="content-card">
+                <h3>${escapeHtml(item.title || item.type || 'Letra')}</h3>
+                <p class="content-meta"><strong>Tipo:</strong> ${escapeHtml(item.type || 'Sin especificar')}</p>
+                <div class="lyrics-text">${escapeHtml(item.text || 'Sin contenido')}</div>
+              </article>
+            `).join('')}
+          </div>
+        `;
+      }
     }
   </script>
 </body>
