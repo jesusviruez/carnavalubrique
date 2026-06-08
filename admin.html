@@ -16,9 +16,7 @@
       --accent-hover: #fbbf24;
       --danger: #ef4444;
       --danger-hover: #dc2626;
-      --success: #22c55e;
       --border: rgba(255,255,255,0.08);
-      --radius: 14px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -28,7 +26,7 @@
       min-height: 100vh;
       padding: 0 20px 40px;
     }
-    .container { max-width: 1300px; margin: 0 auto; }
+    .container { max-width: 1380px; margin: 0 auto; }
     header {
       display: flex;
       justify-content: space-between;
@@ -51,25 +49,6 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(360px, 500px) 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-    .panel {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-    }
-    .panel h2 { margin-bottom: 8px; }
-    .helper {
-      color: var(--muted);
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -85,18 +64,73 @@
     }
     .btn-primary { background: var(--accent); color: #111827; }
     .btn-primary:hover { background: var(--accent-hover); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid var(--border); }
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
     .btn-danger { background: var(--danger); color: #fff; }
     .btn-danger:hover { background: var(--danger-hover); }
-    .btn-small {
-      padding: 7px 10px;
-      font-size: 0.82rem;
-      border-radius: 9px;
+    .btn-small { padding: 7px 10px; font-size: 0.82rem; border-radius: 9px; }
+
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .helper {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    #loginPanel { max-width: 460px; margin: 0 auto 24px; }
+    .status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      display: none;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .status.success {
+      display: block;
+      background: rgba(34,197,94,0.12);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+    .status.error {
+      display: block;
+      background: rgba(239,68,68,0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: rgba(245, 158, 11, 0.13);
+      color: var(--accent);
+      border-color: rgba(245, 158, 11, 0.24);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 520px) 1fr;
+      gap: 24px;
+      align-items: start;
     }
     .form-group {
       display: flex;
@@ -104,10 +138,7 @@
       gap: 6px;
       margin-bottom: 14px;
     }
-    label {
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
+    label { font-size: 0.9rem; font-weight: 700; }
     input, select, textarea {
       width: 100%;
       background: var(--panel-3);
@@ -157,52 +188,12 @@
       gap: 8px;
       min-width: 0;
     }
-    .item h3 { line-height: 1.3; }
     .item-meta { display: grid; gap: 4px; }
     .item-meta p {
       margin: 0;
       color: var(--muted);
       font-size: 0.92rem;
       line-height: 1.45;
-    }
-    .item-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .status {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      display: none;
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-    .status.success {
-      display: block;
-      background: rgba(34,197,94,0.12);
-      color: #86efac;
-      border: 1px solid rgba(34,197,94,0.2);
-    }
-    .status.error {
-      display: block;
-      background: rgba(239,68,68,0.12);
-      color: #fca5a5;
-      border: 1px solid rgba(239,68,68,0.2);
-    }
-    .empty-state {
-      padding: 32px 20px;
-      border: 1px dashed rgba(255,255,255,0.15);
-      border-radius: 14px;
-      text-align: center;
-      color: var(--muted);
-    }
-    #loginPanel {
-      max-width: 460px;
-      margin: 0 auto 24px;
     }
     .mini-badge {
       display: inline-flex;
@@ -215,24 +206,29 @@
       font-weight: 700;
       margin: 0 6px 6px 0;
     }
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .empty-state {
+      padding: 32px 20px;
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 14px;
+      text-align: center;
+      color: var(--muted);
+    }
     .section-title {
       margin: 18px 0 10px;
       padding-top: 18px;
       border-top: 1px solid rgba(255,255,255,0.08);
     }
-    .section-title h3 {
-      font-size: 1rem;
-      margin-bottom: 6px;
-    }
-    .section-title p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.45;
-    }
-    .repeater-list {
-      display: grid;
-      gap: 12px;
-    }
+    .section-title h3 { font-size: 1rem; margin-bottom: 6px; }
+    .section-title p { color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+    .repeater-list { display: grid; gap: 12px; }
     .repeater-item {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
@@ -246,32 +242,11 @@
       grid-template-columns: 1.1fr 1.3fr;
       gap: 12px;
     }
-    .repeater-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-    .item-counts {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .preview-box {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.45;
-    }
-    @media (max-width: 980px) {
-      .layout { grid-template-columns: 1fr; }
-    }
+    .repeater-actions { display: flex; justify-content: flex-end; }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
     @media (max-width: 700px) {
       .item { grid-template-columns: 1fr; }
-      .item img {
-        width: 100%;
-        max-width: 140px;
-        height: auto;
-        aspect-ratio: 1;
-      }
+      .item img { width: 100%; max-width: 140px; height: auto; aspect-ratio: 1; }
       .repeater-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -280,12 +255,13 @@
   <div class="container">
     <header>
       <div>
-        <h1>Administración de agrupaciones</h1>
-        <p class="subtitle">Acceso privado con Firebase Authentication. Aquí podrás completar la ficha de cada agrupación, incluyendo sus datos generales, vídeos de YouTube y el libreto.</p>
+        <h1>Administración del Carnaval de Ubrique</h1>
+        <p class="subtitle">Acceso privado con Firebase Authentication. Gestiona agrupaciones y pregoneros desde un único panel.</p>
       </div>
       <div class="top-actions">
         <a class="btn btn-secondary" href="index.html">Inicio</a>
-        <a class="btn btn-secondary" href="agrupaciones.html">Directorio</a>
+        <a class="btn btn-secondary" href="agrupaciones.html">Agrupaciones</a>
+        <a class="btn btn-secondary" href="pregoneros.html">Pregoneros</a>
         <button id="authBtn" class="btn btn-secondary" type="button" onclick="handleAuthClick()">Login admin</button>
       </div>
     </header>
@@ -307,104 +283,147 @@
       <div id="loginStatus" class="status"></div>
     </section>
 
-    <div id="adminPanel" class="layout" style="display: none;">
-      <section class="panel">
-        <h2 id="formTitle">Añadir agrupación</h2>
-        <p class="helper">Formulario de alta y edición. Los campos de vídeos y libreto se guardan en cada ficha para mostrarse después en la ventana popup del directorio.</p>
+    <div id="adminPanel" style="display:none;">
+      <div class="tabs">
+        <button class="tab-btn active" type="button" data-tab="agrupaciones">Agrupaciones</button>
+        <button class="tab-btn" type="button" data-tab="pregoneros">Pregoneros</button>
+      </div>
 
-        <form id="groupForm" onsubmit="saveGroup(event)">
-          <input type="hidden" id="groupId">
+      <section class="tab-panel active" id="panel-agrupaciones">
+        <div class="layout">
+          <section class="panel">
+            <h2 id="groupFormTitle">Añadir agrupación</h2>
+            <p class="helper">Formulario de alta y edición. Los campos de vídeos y libreto se guardan en cada ficha para mostrarse después en la ventana popup del directorio.</p>
+            <form id="groupForm" onsubmit="saveGroup(event)">
+              <input type="hidden" id="groupId">
 
-          <div class="form-group">
-            <label for="groupYear">Año</label>
-            <input type="number" id="groupYear" min="1900" max="2100" required>
-          </div>
+              <div class="form-group">
+                <label for="groupYear">Año</label>
+                <input type="number" id="groupYear" min="1900" max="2100" required>
+              </div>
+              <div class="form-group">
+                <label for="groupName">Nombre</label>
+                <input type="text" id="groupName" required>
+              </div>
+              <div class="form-group">
+                <label for="groupType">Tipo</label>
+                <select id="groupType" required>
+                  <option value="">Selecciona...</option>
+                  <option value="Chirigota">Chirigota</option>
+                  <option value="Chirigota Infantil">Chirigota Infantil</option>
+                  <option value="Chirigota Juvenil">Chirigota Juvenil</option>
+                  <option value="Comparsa">Comparsa</option>
+                  <option value="Coro">Coro</option>
+                  <option value="Cuarteto">Cuarteto</option>
+                  <option value="Murga">Murga</option>
+                  <option value="Romancero">Romancero</option>
+                  <option value="Romanteto">Romanteto</option>
+                  <option value="Dúo">Dúo</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="groupAuthors">Autores</label>
+                <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
+              </div>
+              <div class="form-group">
+                <label for="groupImage">URL de imagen</label>
+                <input type="url" id="groupImage" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="groupSourceUrl">URL fuente</label>
+                <input type="url" id="groupSourceUrl" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="groupNotes">Notas</label>
+                <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
+              </div>
 
-          <div class="form-group">
-            <label for="groupName">Nombre</label>
-            <input type="text" id="groupName" required>
-          </div>
+              <div class="section-title">
+                <h3>Vídeos</h3>
+                <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
+              </div>
+              <div id="videosList" class="repeater-list"></div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
+              </div>
 
-          <div class="form-group">
-            <label for="groupType">Tipo</label>
-            <select id="groupType" required>
-              <option value="">Selecciona...</option>
-              <option value="Chirigota">Chirigota</option>
-              <option value="Chirigota Infantil">Chirigota Infantil</option>
-              <option value="Chirigota Juvenil">Chirigota Juvenil</option>
-              <option value="Comparsa">Comparsa</option>
-              <option value="Coro">Coro</option>
-              <option value="Cuarteto">Cuarteto</option>
-              <option value="Murga">Murga</option>
-              <option value="Romancero">Romancero</option>
-              <option value="Romanteto">Romanteto</option>
-              <option value="Dúo">Dúo</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
+              <div class="section-title">
+                <h3>Libreto</h3>
+                <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
+              </div>
+              <div id="libretoList" class="repeater-list"></div>
+              <div class="form-actions">
+                <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
+              </div>
 
-          <div class="form-group">
-            <label for="groupAuthors">Autores</label>
-            <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
-          </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Guardar agrupación</button>
+                <button class="btn btn-secondary" type="button" onclick="resetGroupForm()">Limpiar</button>
+              </div>
+            </form>
+            <div id="groupFormStatus" class="status"></div>
+          </section>
 
-          <div class="form-group">
-            <label for="groupImage">URL de imagen</label>
-            <input type="url" id="groupImage" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label for="groupSourceUrl">URL fuente</label>
-            <input type="url" id="groupSourceUrl" placeholder="https://...">
-          </div>
-
-          <div class="form-group">
-            <label for="groupNotes">Notas</label>
-            <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
-          </div>
-
-          <div class="section-title">
-            <h3>Vídeos</h3>
-            <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
-          </div>
-          <div id="videosList" class="repeater-list"></div>
-          <div class="form-actions">
-            <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
-          </div>
-
-          <div class="section-title">
-            <h3>Libreto</h3>
-            <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
-          </div>
-          <div id="libretoList" class="repeater-list"></div>
-          <div class="form-actions">
-            <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
-          </div>
-
-          <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Guardar</button>
-            <button class="btn btn-secondary" type="button" onclick="resetForm()">Limpiar</button>
-          </div>
-        </form>
-        <div id="formStatus" class="status"></div>
+          <section class="panel">
+            <h2>Agrupaciones cargadas</h2>
+            <p class="helper">Lista centralizada para buscar, editar y borrar registros. El buscador no distingue tildes.</p>
+            <div class="toolbar">
+              <input type="text" id="searchInput" placeholder="Buscar por nombre..." oninput="renderGroupList()">
+              <select id="yearFilter" onchange="renderGroupList()">
+                <option value="all">Todos los años</option>
+              </select>
+              <select id="typeFilter" onchange="renderGroupList()">
+                <option value="all">Todos los tipos</option>
+              </select>
+            </div>
+            <div id="groupList" class="list">
+              <div class="empty-state">Cargando agrupaciones...</div>
+            </div>
+          </section>
+        </div>
       </section>
 
-      <section class="panel">
-        <h2>Agrupaciones cargadas</h2>
-        <p class="helper">Lista centralizada para buscar, editar y borrar registros. El buscador no distingue tildes.</p>
+      <section class="tab-panel" id="panel-pregoneros">
+        <div class="layout">
+          <section class="panel">
+            <h2 id="pregoneroFormTitle">Añadir pregonero</h2>
+            <p class="helper">Formulario básico para gestionar los pregoneros del Carnaval de Ubrique.</p>
+            <form id="pregoneroForm" onsubmit="savePregonero(event)">
+              <input type="hidden" id="pregoneroId">
+              <div class="form-group">
+                <label for="pregoneroYear">Año</label>
+                <input type="number" id="pregoneroYear" min="1900" max="2100" required>
+              </div>
+              <div class="form-group">
+                <label for="pregoneroName">Nombre del pregonero</label>
+                <input type="text" id="pregoneroName" required>
+              </div>
+              <div class="form-group">
+                <label for="pregoneroImage">URL de imagen</label>
+                <input type="url" id="pregoneroImage" placeholder="https://...">
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Guardar pregonero</button>
+                <button class="btn btn-secondary" type="button" onclick="resetPregoneroForm()">Limpiar</button>
+              </div>
+            </form>
+            <div id="pregoneroFormStatus" class="status"></div>
+          </section>
 
-        <div class="toolbar">
-          <input type="text" id="searchInput" placeholder="🔎 Buscar por nombre..." oninput="renderList()">
-          <select id="yearFilter" onchange="renderList()">
-            <option value="all">Todos los años</option>
-          </select>
-          <select id="typeFilter" onchange="renderList()">
-            <option value="all">Todos los tipos</option>
-          </select>
-        </div>
-
-        <div id="groupList" class="list">
-          <div class="empty-state">Cargando agrupaciones...</div>
+          <section class="panel">
+            <h2>Pregoneros cargados</h2>
+            <p class="helper">Lista de pregoneros para buscar, editar y borrar registros.</p>
+            <div class="toolbar">
+              <input type="text" id="pregoneroSearchInput" placeholder="Buscar por nombre..." oninput="renderPregoneroList()">
+              <select id="pregoneroYearFilter" onchange="renderPregoneroList()">
+                <option value="all">Todos los años</option>
+              </select>
+            </div>
+            <div id="pregoneroList" class="list">
+              <div class="empty-state">Cargando pregoneros...</div>
+            </div>
+          </section>
         </div>
       </section>
     </div>
@@ -412,22 +431,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      updateDoc,
-      deleteDoc,
-      doc,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
@@ -444,96 +449,96 @@
     const db = getFirestore(app);
 
     let groups = [];
+    let pregoneros = [];
     let userLoggedIn = false;
 
     const yearFilter = document.getElementById("yearFilter");
     const typeFilter = document.getElementById("typeFilter");
     const searchInput = document.getElementById("searchInput");
     const groupList = document.getElementById("groupList");
+    const pregoneroYearFilter = document.getElementById("pregoneroYearFilter");
+    const pregoneroSearchInput = document.getElementById("pregoneroSearchInput");
+    const pregoneroList = document.getElementById("pregoneroList");
     const loginPanel = document.getElementById("loginPanel");
     const adminPanel = document.getElementById("adminPanel");
     const authBtn = document.getElementById("authBtn");
     const videosList = document.getElementById("videosList");
     const libretoList = document.getElementById("libretoList");
 
+    document.querySelector('.tabs').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(item => item.classList.toggle('active', item.dataset.tab === tab));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${tab}`));
+    });
+
     onSnapshot(collection(db, "agrupaciones"), (snapshot) => {
       groups = [];
       snapshot.forEach((docItem) => groups.push({ id: docItem.id, ...docItem.data() }));
-      populateYearFilter();
+      populateGroupYearFilter();
       populateTypeFilter();
-      renderList();
+      renderGroupList();
+    });
+
+    onSnapshot(collection(db, "pregoneros"), (snapshot) => {
+      pregoneros = [];
+      snapshot.forEach((docItem) => pregoneros.push({ id: docItem.id, ...docItem.data() }));
+      populatePregoneroYearFilter();
+      renderPregoneroList();
     });
 
     onAuthStateChanged(auth, (user) => {
       userLoggedIn = !!user;
       if (user) {
-        loginPanel.style.display = "none";
-        adminPanel.style.display = "grid";
-        authBtn.textContent = "Logout";
-        authBtn.classList.remove("btn-secondary");
-        authBtn.classList.add("btn-danger");
-        setLoginStatus("", "");
+        loginPanel.style.display = 'none';
+        adminPanel.style.display = 'block';
+        authBtn.textContent = 'Logout';
+        authBtn.classList.remove('btn-secondary');
+        authBtn.classList.add('btn-danger');
+        setLoginStatus('', '');
       } else {
-        loginPanel.style.display = "block";
-        adminPanel.style.display = "none";
-        authBtn.textContent = "Login admin";
-        authBtn.classList.remove("btn-danger");
-        authBtn.classList.add("btn-secondary");
+        loginPanel.style.display = 'block';
+        adminPanel.style.display = 'none';
+        authBtn.textContent = 'Login admin';
+        authBtn.classList.remove('btn-danger');
+        authBtn.classList.add('btn-secondary');
       }
     });
 
     function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function normalizeText(text) {
-      return (text || "")
+      return (text || '')
         .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
         .trim();
     }
 
-    function safeArray(value) {
-      return Array.isArray(value) ? value : [];
+    function safeArray(value) { return Array.isArray(value) ? value : []; }
+
+    function setStatus(id, message, type) {
+      const el = document.getElementById(id);
+      el.className = 'status';
+      if (!message) {
+        el.textContent = '';
+        return;
+      }
+      el.textContent = message;
+      el.classList.add(type);
     }
 
-    function populateYearFilter() {
-      const currentValue = yearFilter.value;
-      const years = [...new Set(groups.map(g => String(g.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
-      yearFilter.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join("");
-      yearFilter.value = years.includes(currentValue) ? currentValue : "all";
-    }
-
-    function populateTypeFilter() {
-      const currentValue = typeFilter.value;
-      const types = [...new Set(groups.map(g => (g.type || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
-      typeFilter.innerHTML = '<option value="all">Todos los tipos</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join("");
-      typeFilter.value = types.includes(currentValue) ? currentValue : "all";
-    }
-
-    function filteredGroups() {
-      const search = normalizeText(searchInput.value);
-      const year = yearFilter.value;
-      const type = typeFilter.value;
-      return groups.filter(group => {
-        const videosText = safeArray(group.videos).map(v => `${v?.title || ''} ${v?.description || ''} ${v?.url || ''}`).join(' ');
-        const libretoText = safeArray(group.libreto).map(l => `${l?.type || ''} ${l?.title || ''} ${l?.text || ''}`).join(' ');
-        const haystack = [group.name, group.authors, group.type, group.year, group.notes, videosText, libretoText].map(normalizeText).join(' ');
-        const matchesSearch = !search || haystack.includes(search);
-        const matchesYear = year === "all" || String(group.year) === year;
-        const matchesType = type === "all" || (group.type || "") === type;
-        return matchesSearch && matchesYear && matchesType;
-      }).sort((a, b) => {
-        if (String(b.year) !== String(a.year)) return Number(b.year || 0) - Number(a.year || 0);
-        return (a.name || "").localeCompare((b.name || ""), "es");
-      });
+    function setLoginStatus(message, type) {
+      setStatus('loginStatus', message, type);
     }
 
     function collectVideos() {
@@ -604,15 +609,62 @@
       return wrapper;
     }
 
-    window.addVideoItem = function(data = {}) {
-      videosList.appendChild(renderVideoItem(data));
-    };
+    window.addVideoItem = function(data = {}) { videosList.appendChild(renderVideoItem(data)); };
+    window.addLibretoItem = function(data = {}) { libretoList.appendChild(renderLibretoItem(data)); };
 
-    window.addLibretoItem = function(data = {}) {
-      libretoList.appendChild(renderLibretoItem(data));
-    };
+    function populateGroupYearFilter() {
+      const currentValue = yearFilter.value;
+      const years = [...new Set(groups.map(g => String(g.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
+      yearFilter.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+      yearFilter.value = years.includes(currentValue) ? currentValue : 'all';
+    }
 
-    window.renderList = function() {
+    function populateTypeFilter() {
+      const currentValue = typeFilter.value;
+      const types = [...new Set(groups.map(g => (g.type || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
+      typeFilter.innerHTML = '<option value="all">Todos los tipos</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+      typeFilter.value = types.includes(currentValue) ? currentValue : 'all';
+    }
+
+    function populatePregoneroYearFilter() {
+      const currentValue = pregoneroYearFilter.value;
+      const years = [...new Set(pregoneros.map(item => String(item.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
+      pregoneroYearFilter.innerHTML = '<option value="all">Todos los años</option>' + years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+      pregoneroYearFilter.value = years.includes(currentValue) ? currentValue : 'all';
+    }
+
+    function filteredGroups() {
+      const search = normalizeText(searchInput.value);
+      const year = yearFilter.value;
+      const type = typeFilter.value;
+      return groups.filter(group => {
+        const videosText = safeArray(group.videos).map(v => `${v?.title || ''} ${v?.description || ''} ${v?.url || ''}`).join(' ');
+        const libretoText = safeArray(group.libreto).map(l => `${l?.type || ''} ${l?.title || ''} ${l?.text || ''}`).join(' ');
+        const haystack = [group.name, group.authors, group.type, group.year, group.notes, videosText, libretoText].map(normalizeText).join(' ');
+        const matchesSearch = !search || haystack.includes(search);
+        const matchesYear = year === 'all' || String(group.year) === year;
+        const matchesType = type === 'all' || (group.type || '') === type;
+        return matchesSearch && matchesYear && matchesType;
+      }).sort((a, b) => {
+        if (String(b.year) !== String(a.year)) return Number(b.year || 0) - Number(a.year || 0);
+        return (a.name || '').localeCompare((b.name || ''), 'es');
+      });
+    }
+
+    function filteredPregoneros() {
+      const search = normalizeText(pregoneroSearchInput.value);
+      const year = pregoneroYearFilter.value;
+      return pregoneros.filter(item => {
+        const matchesSearch = !search || normalizeText(item.name).includes(search);
+        const matchesYear = year === 'all' || String(item.year) === year;
+        return matchesSearch && matchesYear;
+      }).sort((a, b) => {
+        if (String(b.year) !== String(a.year)) return Number(b.year || 0) - Number(a.year || 0);
+        return (a.name || '').localeCompare((b.name || ''), 'es');
+      });
+    }
+
+    window.renderGroupList = function() {
       if (!userLoggedIn) {
         groupList.innerHTML = '<div class="empty-state">Inicia sesión para ver y gestionar las agrupaciones.</div>';
         return;
@@ -622,7 +674,6 @@
         groupList.innerHTML = '<div class="empty-state">No hay agrupaciones que coincidan con los filtros actuales.</div>';
         return;
       }
-
       groupList.innerHTML = data.map(group => {
         const videoCount = safeArray(group.videos).filter(v => v?.url || v?.title).length || ((group.youtube || '').trim() ? 1 : 0);
         const libretoCount = safeArray(group.libreto).filter(l => l?.type || l?.title || l?.text).length;
@@ -637,32 +688,56 @@
                   <span class="mini-badge">${escapeHtml(group.type || '-')}</span>
                 </p>
                 <p><strong>Autores:</strong> ${escapeHtml(group.authors || 'Pendiente')}</p>
-                <div class="item-counts">
-                  <span class="mini-badge">Vídeos: ${videoCount}</span>
-                  <span class="mini-badge">Letras: ${libretoCount}</span>
-                </div>
+                <p><span class="mini-badge">Vídeos: ${videoCount}</span><span class="mini-badge">Letras: ${libretoCount}</span></p>
                 ${group.notes ? `<p>${escapeHtml(group.notes)}</p>` : ''}
               </div>
               <div class="item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editGroup('${escapeHtml(group.id)}')">Editar</button>
-                <button class="btn btn-danger btn-small" onclick="removeGroup('${escapeHtml(group.id)}')">Borrar</button>
+                <button class="btn btn-secondary btn-small" onclick="editGroup('${group.id}')">Editar</button>
+                <button class="btn btn-danger btn-small" onclick="removeGroup('${group.id}')">Borrar</button>
               </div>
             </div>
           </article>
         `;
-      }).join("");
+      }).join('');
+    };
+
+    window.renderPregoneroList = function() {
+      if (!userLoggedIn) {
+        pregoneroList.innerHTML = '<div class="empty-state">Inicia sesión para ver y gestionar los pregoneros.</div>';
+        return;
+      }
+      const data = filteredPregoneros();
+      if (!data.length) {
+        pregoneroList.innerHTML = '<div class="empty-state">No hay pregoneros que coincidan con los filtros actuales.</div>';
+        return;
+      }
+      pregoneroList.innerHTML = data.map(item => `
+        <article class="item">
+          <img src="${escapeHtml(item.image || 'https://placehold.co/200x200?text=Sin+imagen')}" alt="Imagen de ${escapeHtml(item.name || 'pregonero')}" onerror="this.src='https://placehold.co/200x200?text=Sin+imagen'">
+          <div class="item-content">
+            <h3>${escapeHtml(item.name || 'Sin nombre')}</h3>
+            <div class="item-meta">
+              <p><span class="mini-badge">${escapeHtml(item.year || '-')}</span></p>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-secondary btn-small" onclick="editPregonero('${item.id}')">Editar</button>
+              <button class="btn btn-danger btn-small" onclick="removePregonero('${item.id}')">Borrar</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
     };
 
     window.login = async function() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-        setLoginStatus("", "");
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        setLoginStatus('', '');
       } catch (error) {
-        setLoginStatus("Error de autenticación: " + error.message, "error");
+        setLoginStatus('Error de autenticación: ' + error.message, 'error');
       }
     };
 
@@ -670,56 +745,78 @@
       if (userLoggedIn) {
         try {
           await signOut(auth);
-          resetForm(false);
-          setLoginStatus("Sesión cerrada correctamente.", "success");
+          resetGroupForm(false);
+          resetPregoneroForm(false);
+          setLoginStatus('Sesión cerrada correctamente.', 'success');
         } catch (error) {
-          setLoginStatus("Error al cerrar sesión: " + error.message, "error");
+          setLoginStatus('Error al cerrar sesión: ' + error.message, 'error');
         }
       } else {
-        document.getElementById("email").focus();
+        document.getElementById('email').focus();
       }
     };
 
     window.saveGroup = async function(event) {
       event.preventDefault();
       if (!userLoggedIn) {
-        setStatus("Debes iniciar sesión para guardar cambios.", "error");
+        setStatus('groupFormStatus', 'Debes iniciar sesión para guardar cambios.', 'error');
         return;
       }
-
       const videos = collectVideos();
       const libreto = collectLibreto();
-      const primaryYoutube = videos.find(item => item.url)?.url || "";
-
+      const primaryYoutube = videos.find(item => item.url)?.url || '';
       const payload = {
-        year: Number(document.getElementById("groupYear").value),
-        name: document.getElementById("groupName").value.trim(),
-        type: document.getElementById("groupType").value,
-        authors: document.getElementById("groupAuthors").value.trim() || "",
-        image: document.getElementById("groupImage").value.trim() || "",
-        sourceUrl: document.getElementById("groupSourceUrl").value.trim() || "",
-        notes: document.getElementById("groupNotes").value.trim() || "",
+        year: Number(document.getElementById('groupYear').value),
+        name: document.getElementById('groupName').value.trim(),
+        type: document.getElementById('groupType').value,
+        authors: document.getElementById('groupAuthors').value.trim() || '',
+        image: document.getElementById('groupImage').value.trim() || '',
+        sourceUrl: document.getElementById('groupSourceUrl').value.trim() || '',
+        notes: document.getElementById('groupNotes').value.trim() || '',
         youtube: primaryYoutube,
         videos,
         libreto,
         updatedAt: serverTimestamp()
       };
-
-      const id = document.getElementById("groupId").value;
+      const id = document.getElementById('groupId').value;
       try {
         if (id) {
-          await updateDoc(doc(db, "agrupaciones", id), payload);
-          setStatus("Agrupación actualizada correctamente.", "success");
+          await updateDoc(doc(db, 'agrupaciones', id), payload);
+          setStatus('groupFormStatus', 'Agrupación actualizada correctamente.', 'success');
         } else {
-          await addDoc(collection(db, "agrupaciones"), {
-            ...payload,
-            createdAt: serverTimestamp()
-          });
-          setStatus("Agrupación añadida correctamente.", "success");
+          await addDoc(collection(db, 'agrupaciones'), { ...payload, createdAt: serverTimestamp() });
+          setStatus('groupFormStatus', 'Agrupación añadida correctamente.', 'success');
         }
-        resetForm(false);
+        resetGroupForm(false);
       } catch (error) {
-        setStatus("Error al guardar: " + error.message, "error");
+        setStatus('groupFormStatus', 'Error al guardar: ' + error.message, 'error');
+      }
+    };
+
+    window.savePregonero = async function(event) {
+      event.preventDefault();
+      if (!userLoggedIn) {
+        setStatus('pregoneroFormStatus', 'Debes iniciar sesión para guardar cambios.', 'error');
+        return;
+      }
+      const payload = {
+        year: Number(document.getElementById('pregoneroYear').value),
+        name: document.getElementById('pregoneroName').value.trim(),
+        image: document.getElementById('pregoneroImage').value.trim() || '',
+        updatedAt: serverTimestamp()
+      };
+      const id = document.getElementById('pregoneroId').value;
+      try {
+        if (id) {
+          await updateDoc(doc(db, 'pregoneros', id), payload);
+          setStatus('pregoneroFormStatus', 'Pregonero actualizado correctamente.', 'success');
+        } else {
+          await addDoc(collection(db, 'pregoneros'), { ...payload, createdAt: serverTimestamp() });
+          setStatus('pregoneroFormStatus', 'Pregonero añadido correctamente.', 'success');
+        }
+        resetPregoneroForm(false);
+      } catch (error) {
+        setStatus('pregoneroFormStatus', 'Error al guardar: ' + error.message, 'error');
       }
     };
 
@@ -727,95 +824,93 @@
       if (!userLoggedIn) return;
       const group = groups.find(g => g.id === id);
       if (!group) return;
-
-      document.getElementById("groupId").value = group.id;
-      document.getElementById("groupYear").value = group.year || "";
-      document.getElementById("groupName").value = group.name || "";
-      document.getElementById("groupType").value = group.type || "";
-      document.getElementById("groupAuthors").value = group.authors || "";
-      document.getElementById("groupImage").value = group.image || "";
-      document.getElementById("groupSourceUrl").value = group.sourceUrl || "";
-      document.getElementById("groupNotes").value = group.notes || "";
-
-      videosList.innerHTML = "";
-      libretoList.innerHTML = "";
-
+      document.getElementById('groupId').value = group.id;
+      document.getElementById('groupYear').value = group.year || '';
+      document.getElementById('groupName').value = group.name || '';
+      document.getElementById('groupType').value = group.type || '';
+      document.getElementById('groupAuthors').value = group.authors || '';
+      document.getElementById('groupImage').value = group.image || '';
+      document.getElementById('groupSourceUrl').value = group.sourceUrl || '';
+      document.getElementById('groupNotes').value = group.notes || '';
+      videosList.innerHTML = '';
+      libretoList.innerHTML = '';
       const groupVideos = safeArray(group.videos).filter(v => v?.url || v?.title || v?.description);
       const groupLibreto = safeArray(group.libreto).filter(l => l?.type || l?.title || l?.text);
+      if (groupVideos.length) groupVideos.forEach(video => addVideoItem(video));
+      else if ((group.youtube || '').trim()) addVideoItem({ title: 'Vídeo principal', url: group.youtube, description: '' });
+      else addVideoItem();
+      if (groupLibreto.length) groupLibreto.forEach(item => addLibretoItem(item));
+      else addLibretoItem();
+      document.getElementById('groupFormTitle').textContent = 'Editar agrupación';
+      setStatus('groupFormStatus', '', '');
+      document.querySelector('[data-tab="agrupaciones"]').click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-      if (groupVideos.length) {
-        groupVideos.forEach(video => addVideoItem(video));
-      } else if ((group.youtube || "").trim()) {
-        addVideoItem({ title: "Vídeo principal", url: group.youtube, description: "" });
-      } else {
-        addVideoItem();
-      }
-
-      if (groupLibreto.length) {
-        groupLibreto.forEach(item => addLibretoItem(item));
-      } else {
-        addLibretoItem();
-      }
-
-      document.getElementById("formTitle").textContent = "Editar agrupación";
-      setStatus("", "");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    window.editPregonero = function(id) {
+      if (!userLoggedIn) return;
+      const item = pregoneros.find(p => p.id === id);
+      if (!item) return;
+      document.getElementById('pregoneroId').value = item.id;
+      document.getElementById('pregoneroYear').value = item.year || '';
+      document.getElementById('pregoneroName').value = item.name || '';
+      document.getElementById('pregoneroImage').value = item.image || '';
+      document.getElementById('pregoneroFormTitle').textContent = 'Editar pregonero';
+      setStatus('pregoneroFormStatus', '', '');
+      document.querySelector('[data-tab="pregoneros"]').click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.removeGroup = async function(id) {
       if (!userLoggedIn) {
-        setStatus("Debes iniciar sesión para borrar registros.", "error");
+        setStatus('groupFormStatus', 'Debes iniciar sesión para borrar registros.', 'error');
         return;
       }
-      if (!confirm("¿Seguro que quieres borrar esta agrupación?")) return;
+      if (!confirm('¿Seguro que quieres borrar esta agrupación?')) return;
       try {
-        await deleteDoc(doc(db, "agrupaciones", id));
-        setStatus("Agrupación eliminada correctamente.", "success");
-        if (document.getElementById("groupId").value === id) {
-          resetForm(false);
-        }
+        await deleteDoc(doc(db, 'agrupaciones', id));
+        setStatus('groupFormStatus', 'Agrupación eliminada correctamente.', 'success');
+        if (document.getElementById('groupId').value === id) resetGroupForm(false);
       } catch (error) {
-        setStatus("Error al borrar: " + error.message, "error");
+        setStatus('groupFormStatus', 'Error al borrar: ' + error.message, 'error');
       }
     };
 
-    window.resetForm = function(clearStatus = true) {
-      document.getElementById("groupForm").reset();
-      document.getElementById("groupId").value = "";
-      document.getElementById("formTitle").textContent = "Añadir agrupación";
-      videosList.innerHTML = "";
-      libretoList.innerHTML = "";
+    window.removePregonero = async function(id) {
+      if (!userLoggedIn) {
+        setStatus('pregoneroFormStatus', 'Debes iniciar sesión para borrar registros.', 'error');
+        return;
+      }
+      if (!confirm('¿Seguro que quieres borrar este pregonero?')) return;
+      try {
+        await deleteDoc(doc(db, 'pregoneros', id));
+        setStatus('pregoneroFormStatus', 'Pregonero eliminado correctamente.', 'success');
+        if (document.getElementById('pregoneroId').value === id) resetPregoneroForm(false);
+      } catch (error) {
+        setStatus('pregoneroFormStatus', 'Error al borrar: ' + error.message, 'error');
+      }
+    };
+
+    window.resetGroupForm = function(clearStatus = true) {
+      document.getElementById('groupForm').reset();
+      document.getElementById('groupId').value = '';
+      document.getElementById('groupFormTitle').textContent = 'Añadir agrupación';
+      videosList.innerHTML = '';
+      libretoList.innerHTML = '';
       addVideoItem();
       addLibretoItem();
-      if (clearStatus) {
-        setStatus("", "");
-      }
+      if (clearStatus) setStatus('groupFormStatus', '', '');
     };
 
-    function setStatus(message, type) {
-      const el = document.getElementById("formStatus");
-      el.className = "status";
-      if (!message) {
-        el.textContent = "";
-        return;
-      }
-      el.textContent = message;
-      el.classList.add(type);
-    }
+    window.resetPregoneroForm = function(clearStatus = true) {
+      document.getElementById('pregoneroForm').reset();
+      document.getElementById('pregoneroId').value = '';
+      document.getElementById('pregoneroFormTitle').textContent = 'Añadir pregonero';
+      if (clearStatus) setStatus('pregoneroFormStatus', '', '');
+    };
 
-    function setLoginStatus(message, type) {
-      const el = document.getElementById("loginStatus");
-      el.className = "status";
-      if (!message) {
-        el.textContent = "";
-        return;
-      }
-      el.textContent = message;
-      el.classList.add(type);
-    }
-
-    // Estado inicial del formulario
-    resetForm(false);
+    resetGroupForm(false);
+    resetPregoneroForm(false);
   </script>
 </body>
 </html>
