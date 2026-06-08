@@ -155,17 +155,46 @@
     .toggle-title-wrap { display: grid; gap: 4px; }
     .toggle-title { font-weight: 800; line-height: 1.35; }
     .toggle-type { color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
-    .toggle-icon {
-      color: var(--accent); font-weight: 900; font-size: 1rem; transition: transform 0.28s ease;
-    }
-    .lyrics-body {
-      margin-top: 10px; padding: 0 16px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      max-height: 0; overflow: hidden; opacity: 0;
-      transition: max-height 0.32s ease, opacity 0.24s ease, padding-top 0.32s ease, padding-bottom 0.32s ease;
-    }
-    .lyrics-item.open .lyrics-body {
-      opacity: 1; padding-top: 14px; padding-bottom: 14px;
-    }
+.toggle-icon {
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 1rem;
+  transition: transform 0.28s ease;
+}
+
+.lyrics-body {
+  margin-top: 10px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  box-sizing: border-box;
+  transition:
+    max-height 0.32s ease,
+    opacity 0.24s ease,
+    padding-top 0.32s ease,
+    padding-bottom 0.32s ease;
+}
+
+.lyrics-item.open .lyrics-body {
+  opacity: 1;
+  padding-top: 14px;
+  padding-bottom: 18px; /* un poco más de aire abajo para que no se corte */
+}
+
+.lyrics-item.open .toggle-icon {
+  transform: rotate(45deg);
+}
+
+.lyrics-text {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  color: var(--text);
+  padding-bottom: 2px; /* margen de seguridad para la última línea */
+}
     .lyrics-item.open .toggle-icon { transform: rotate(45deg); }
     @media (max-width: 900px) { .modal-hero { grid-template-columns: 1fr; } }
     @media (max-width: 768px) {
@@ -174,8 +203,45 @@
       .modal-backdrop { padding: 12px; }
       .modal-header, .modal-body { padding-left: 14px; padding-right: 14px; }
     }
+    .image-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.image-viewer.open {
+  display: flex;
+}
+
+.image-viewer img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 10px;
+}
+
+#closeImageViewer {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+.modal-image {
+  cursor: zoom-in;
+}
+
   </style>
 </head>
+  <div id="imageViewer" class="image-viewer">
+  <span id="closeImageViewer">&times;</span>
+  <img id="imageViewerImg" />
+</div>
 <body>
   <div class="container">
     <header>
@@ -300,7 +366,7 @@
       } else {
         item.classList.add('open');
         trigger.setAttribute('aria-expanded', 'true');
-        if (body) body.style.maxHeight = body.scrollHeight + 'px';
+        if (body) body.style.maxHeight = (body.scrollHeight + 24) + 'px';
       }
     });
 
@@ -507,6 +573,25 @@
         }).join('')}</div>`;
       }
     }
+
+    const imageViewer = document.getElementById('imageViewer');
+const imageViewerImg = document.getElementById('imageViewerImg');
+const closeImageViewer = document.getElementById('closeImageViewer');
+
+modalImage.addEventListener('click', () => {
+  imageViewer.classList.add('open');
+  imageViewerImg.src = modalImage.src;
+});
+
+closeImageViewer.addEventListener('click', () => {
+  imageViewer.classList.remove('open');
+});
+
+imageViewer.addEventListener('click', (e) => {
+  if (e.target === imageViewer) {
+    imageViewer.classList.remove('open');
+  }
+});
   </script>
 </body>
 </html>
