@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carnaval de Ubrique | Pregoneros</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --panel-3: #0b1220;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
+      --border: rgba(255,255,255,0.08);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 0 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    h1 { font-size: 1.9rem; }
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 0.96rem;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: 0.2s ease;
+      font: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #111827;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    input, select {
+      background: var(--panel-3);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 10px 14px;
+      outline: none;
+      min-width: 160px;
+      flex: 1;
+      font: inherit;
+    }
+    .results-meta {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 0.94rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    .card-cover {
+      aspect-ratio: 4 / 5;
+      background: #1f2937;
+      overflow: hidden;
+    }
+    .card-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .year-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .name {
+      font-size: 1.08rem;
+      line-height: 1.35;
+      color: var(--text);
+      font-weight: 800;
+    }
+    .empty-state {
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+    @media (max-width: 768px) {
+      .filters { flex-direction: column; }
+      input, select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Listado de pregoneros</h1>
+        <p class="subtitle">Consulta el histórico de pregoneros del Carnaval de Ubrique por año o nombre.</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="index.html">Inicio</a>
+        <a class="btn btn-secondary" href="agrupaciones.html">Agrupaciones</a>
+        <a class="btn btn-primary" href="admin.html">Administración</a>
+      </div>
+    </header>
+
+    <section class="filters">
+      <input type="text" id="searchName" placeholder="Buscar por nombre...">
+      <select id="filterYear">
+        <option value="all">Todos los años</option>
+      </select>
+      <button class="btn btn-secondary" type="button" onclick="clearFilters()">Limpiar filtros</button>
+    </section>
+
+    <p class="results-meta" id="resultsMeta">Cargando pregoneros...</p>
+    <main class="grid" id="pregonerosGrid"></main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
+      authDomain: "carnavalubrique.firebaseapp.com",
+      projectId: "carnavalubrique",
+      storageBucket: "carnavalubrique.firebasestorage.app",
+      messagingSenderId: "925068714888",
+      appId: "1:925068714888:web:cc2f7f3ca165515907903d",
+      measurementId: "G-LT0TP9BWSR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let pregoneros = [];
+
+    const nameInput = document.getElementById('searchName');
+    const yearSelect = document.getElementById('filterYear');
+    const grid = document.getElementById('pregonerosGrid');
+    const resultsMeta = document.getElementById('resultsMeta');
+
+    nameInput.addEventListener('input', renderPregoneros);
+    yearSelect.addEventListener('change', renderPregoneros);
+
+    onSnapshot(collection(db, 'pregoneros'), (snapshot) => {
+      pregoneros = [];
+      snapshot.forEach((doc) => pregoneros.push({ id: doc.id, ...doc.data() }));
+      populateYears();
+      renderPregoneros();
+    });
+
+    function normalizeText(text) {
+      return (text || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function populateYears() {
+      const currentValue = yearSelect.value;
+      const years = [...new Set(pregoneros.map(item => String(item.year)).filter(Boolean))]
+        .sort((a, b) => Number(b) - Number(a));
+      yearSelect.innerHTML = '<option value="all">Todos los años</option>' + years.map(year => `<option value="${escapeHtml(year)}">${escapeHtml(year)}</option>`).join('');
+      yearSelect.value = years.includes(currentValue) ? currentValue : 'all';
+    }
+
+    function getFilteredPregoneros() {
+      const text = normalizeText(nameInput.value);
+      const year = yearSelect.value;
+
+      return pregoneros.filter(item => {
+        const matchesText = !text || normalizeText(item.name).includes(text);
+        const matchesYear = year === 'all' || String(item.year) === year;
+        return matchesText && matchesYear;
+      }).sort((a, b) => {
+        if (String(b.year) !== String(a.year)) return Number(b.year || 0) - Number(a.year || 0);
+        return (a.name || '').localeCompare((b.name || ''), 'es');
+      });
+    }
+
+    window.clearFilters = function() {
+      nameInput.value = '';
+      yearSelect.value = 'all';
+      renderPregoneros();
+    };
+
+    function renderPregoneros() {
+      const filtered = getFilteredPregoneros();
+      resultsMeta.textContent = `${filtered.length} pregonero(s) encontrado(s)`;
+
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty-state">No hay pregoneros que coincidan con los filtros actuales.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => `
+        <article class="card">
+          <div class="card-cover">
+            <img src="${escapeHtml(item.image || 'https://placehold.co/500x650?text=Sin+imagen')}" alt="Imagen de ${escapeHtml(item.name || 'pregonero')}" onerror="this.src='https://placehold.co/500x650?text=Sin+imagen'">
+          </div>
+          <div class="card-body">
+            <span class="year-badge">${escapeHtml(item.year || 'Sin año')}</span>
+            <h2 class="name">${escapeHtml(item.name || 'Sin nombre')}</h2>
+          </div>
+        </article>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
