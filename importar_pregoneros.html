@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importar pregoneros | Carnaval de Ubrique</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --border: rgba(255,255,255,0.08);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    .card {
+      background: rgba(17,24,39,0.96);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .notice {
+      background: rgba(245,158,11,0.10);
+      border: 1px solid rgba(245,158,11,0.18);
+      color: #fde68a;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0 20px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
+      font: inherit;
+    }
+    .btn-primary { background: var(--accent); color: #111827; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+    .status {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .status.show { display: block; }
+    .status.info {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .status.success {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.20);
+      color: #86efac;
+    }
+    .status.error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.20);
+      color: #fca5a5;
+    }
+    .log {
+      background: #0b1220;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 220px;
+      max-height: 420px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+    .small {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      margin-top: 16px;
+    }
+    code.inline {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Importar pregoneros</h1>
+      <p class="subtitle">
+        Este fichero inserta en Firestore el listado histórico de pregoneros del Carnaval de Ubrique
+        dentro de la colección <code class="inline">pregoneros</code>.
+      </p>
+
+      <div class="notice">
+        <strong>Importante:</strong> ejecuta esta importación una sola vez sobre una colección vacía o
+        después de borrar los registros de prueba, para evitar duplicados.
+      </div>
+
+      <div id="status" class="status info show">Preparado para importar.</div>
+
+      <div class="actions">
+        <button id="importBtn" class="btn btn-primary" type="button">Importar pregoneros</button>
+        <button id="testBtn" class="btn btn-secondary" type="button">Probar conexión</button>
+      </div>
+
+      <div id="log" class="log">Esperando acción...</div>
+
+      <p class="small">
+        Si quieres, después puedes completar las imágenes desde tu <code class="inline">admin.html</code>.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPFnFqpioEnuo5-nSDsGqupsv-AFyiunU",
+      authDomain: "carnavalubrique.firebaseapp.com",
+      projectId: "carnavalubrique",
+      storageBucket: "carnavalubrique.firebasestorage.app",
+      messagingSenderId: "925068714888",
+      appId: "1:925068714888:web:cc2f7f3ca165515907903d",
+      measurementId: "G-LT0TP9BWSR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const pregoneros = [
+      { year: 1986, name: "Vicente Carnaval", image: "" },
+      { year: 1987, name: "Bartolomé Pérez", image: "" },
+      { year: 1988, name: "Ramón Díaz \"Fletilla\"", image: "" },
+      { year: 1989, name: "Los ratas", image: "" },
+      { year: 1990, name: "Diego Caraballo", image: "" },
+      { year: 1991, name: "Juan Guerra", image: "" },
+      { year: 1992, name: "Tate Montoya", image: "" },
+      { year: 1993, name: "La chirigota del Love \"PROE\"", image: "" },
+      { year: 1994, name: "Modesto Barragán", image: "" },
+      { year: 1995, name: "Chirigota del Sheriff \"Los varones\"", image: "" },
+      { year: 1996, name: "Cuarteto de Rota \"Windows 95\"", image: "" },
+      { year: 1997, name: "Justo Andrades", image: "" },
+      { year: 1998, name: "Joaquín Quiñones", image: "" },
+      { year: 1999, name: "Pablo Carbonell", image: "" },
+      { year: 2000, name: "Mari Carmen López", image: "" },
+      { year: 2001, name: "Francisco Panal", image: "" },
+      { year: 2002, name: "Fernando Dominguez \"Pepete\"", image: "" },
+      { year: 2003, name: "Manuel González \"El chato\"", image: "" },
+      { year: 2004, name: "Jesús Domínguez", image: "" },
+      { year: 2005, name: "Juan Cristobal Chacón \"Juancri\"", image: "" },
+      { year: 2006, name: "Cristóbal Ríos", image: "" },
+      { year: 2007, name: "Joaquin Domínguez", image: "" },
+      { year: 2008, name: "Ana María Venegas", image: "" },
+      { year: 2009, name: "Esteban Ruíz", image: "" },
+      { year: 2010, name: "Juan Pan", image: "" },
+      { year: 2011, name: "Antonio Fabero", image: "" },
+      { year: 2012, name: "Jesús Gil \"Fosforito\"", image: "" },
+      { year: 2013, name: "Juan María Mateos", image: "" },
+      { year: 2014, name: "Francisco Javier Sánchez \"Boito\"", image: "" },
+      { year: 2015, name: "Rafael Carretero", image: "" },
+      { year: 2016, name: "David Benítez \"el viejo\"", image: "" },
+      { year: 2017, name: "Salvador Suárez Mariscal", image: "" },
+      { year: 2018, name: "Alejandro Román \"Anillao\"", image: "" },
+      { year: 2019, name: "Sandra Morales", image: "" },
+      { year: 2020, name: "José Miguel Lamela", image: "" },
+      { year: 2021, name: "-", image: "" },
+      { year: 2022, name: "Grupo del Entierro de la Patacabra", image: "" },
+      { year: 2023, name: "Hermanos Moreno", image: "" },
+      { year: 2024, name: "Maria del Mar Santos", image: "" },
+      { year: 2025, name: "Pedro Rubiales", image: "" }
+    ];
+
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const importBtn = document.getElementById('importBtn');
+    const testBtn = document.getElementById('testBtn');
+
+    function setStatus(message, type = 'info') {
+      statusEl.className = `status show ${type}`;
+      statusEl.textContent = message;
+    }
+
+    function appendLog(message) {
+      const timestamp = new Date().toLocaleTimeString('es-ES');
+      logEl.textContent += `\n[${timestamp}] ${message}`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    async function testConnection() {
+      setStatus('Probando conexión con Firestore...', 'info');
+      appendLog('Iniciando prueba de conexión...');
+      try {
+        const q = query(collection(db, 'pregoneros'), limit(1));
+        const snapshot = await getDocs(q);
+        appendLog(`Conexión OK. Documentos leídos: ${snapshot.size}`);
+        setStatus('Conexión con Firestore correcta.', 'success');
+      } catch (error) {
+        console.error(error);
+        appendLog('Error de conexión: ' + error.message);
+        setStatus('Error de conexión con Firestore: ' + error.message, 'error');
+      }
+    }
+
+    async function importPregoneros() {
+      importBtn.disabled = true;
+      testBtn.disabled = true;
+      setStatus('Importando pregoneros...', 'info');
+      appendLog(`Se van a importar ${pregoneros.length} registros.`);
+
+      let count = 0;
+      try {
+        for (const item of pregoneros) {
+          await addDoc(collection(db, 'pregoneros'), {
+            ...item,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          count++;
+          appendLog(`Importado ${item.year}: ${item.name}`);
+        }
+        setStatus(`Importación completada correctamente. Registros insertados: ${count}.`, 'success');
+        appendLog('Proceso finalizado correctamente.');
+      } catch (error) {
+        console.error(error);
+        setStatus(`Error durante la importación. Insertados hasta ahora: ${count}. Detalle: ${error.message}`, 'error');
+        appendLog('Error durante la importación: ' + error.message);
+      } finally {
+        importBtn.disabled = false;
+        testBtn.disabled = false;
+      }
+    }
+
+    importBtn.addEventListener('click', importPregoneros);
+    testBtn.addEventListener('click', testConnection);
+  </script>
+</body>
+</html>
