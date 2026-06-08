@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carnaval de Ubrique | Directorio de Agrupaciones</title>
+  <title>Carnaval de Ubrique | Directorio</title>
   <style>
     :root {
       --bg: #0f172a;
       --panel: #111827;
-      --panel-2: #1f2937;
       --text: #e5e7eb;
       --muted: #9ca3af;
       --accent: #f59e0b;
@@ -16,9 +15,7 @@
       --border: rgba(255,255,255,0.08);
       --radius: 16px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
@@ -29,17 +26,15 @@
       align-items: center;
       padding: 24px;
     }
-
     .card {
       width: 100%;
-      max-width: 820px;
+      max-width: 980px;
       background: rgba(17, 24, 39, 0.95);
       border: 1px solid var(--border);
       border-radius: 24px;
       padding: 40px 28px;
       box-shadow: 0 24px 60px rgba(0,0,0,0.35);
     }
-
     .eyebrow {
       display: inline-block;
       padding: 6px 12px;
@@ -50,29 +45,25 @@
       font-size: 0.85rem;
       margin-bottom: 14px;
     }
-
     h1 {
       font-size: clamp(2rem, 5vw, 3rem);
       line-height: 1.05;
       margin-bottom: 14px;
       letter-spacing: -1px;
     }
-
     p.subtitle {
       color: var(--muted);
       font-size: 1.02rem;
       line-height: 1.65;
       margin-bottom: 28px;
-      max-width: 700px;
+      max-width: 780px;
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 16px;
       margin-bottom: 26px;
     }
-
     .link-card {
       display: block;
       text-decoration: none;
@@ -83,31 +74,26 @@
       padding: 20px;
       transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-
     .link-card:hover {
       transform: translateY(-4px);
       border-color: rgba(245, 158, 11, 0.35);
       background: rgba(255,255,255,0.06);
     }
-
     .link-card h2 {
       font-size: 1.15rem;
       margin-bottom: 8px;
     }
-
     .link-card p {
       color: var(--muted);
       line-height: 1.55;
       font-size: 0.95rem;
     }
-
     .actions {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -118,22 +104,17 @@
       font-weight: 700;
       transition: all 0.2s ease;
     }
-
     .btn-primary {
       background: var(--accent);
       color: #111827;
     }
-
     .btn-primary:hover { background: var(--accent-hover); }
-
     .btn-secondary {
       background: rgba(255,255,255,0.08);
       color: var(--text);
       border: 1px solid var(--border);
     }
-
     .btn-secondary:hover { background: rgba(255,255,255,0.12); }
-
     .footer-note {
       margin-top: 24px;
       color: var(--muted);
@@ -145,10 +126,10 @@
 <body>
   <main class="card">
     <span class="eyebrow">Carnaval de Ubrique</span>
-    <h1>Directorio de agrupaciones</h1>
+    <h1>Archivo del Carnaval de Ubrique</h1>
     <p class="subtitle">
-      Proyecto base para consultar agrupaciones históricas del Carnaval de Ubrique por año y tipo,
-      y completar posteriormente cada ficha con imagen, autoría y enlaces de YouTube.
+      Proyecto para consultar el histórico de agrupaciones y pregoneros del Carnaval de Ubrique,
+      y completar posteriormente cada ficha con imagen, autoría, vídeos de YouTube y libreto.
     </p>
 
     <section class="grid">
@@ -157,14 +138,20 @@
         <p>Listado público con filtros por año, nombre y tipo de agrupación.</p>
       </a>
 
+      <a class="link-card" href="pregoneros.html">
+        <h2>Ver pregoneros</h2>
+        <p>Consulta el listado de pregoneros del Carnaval de Ubrique con su año e imagen.</p>
+      </a>
+
       <a class="link-card" href="admin.html">
         <h2>Administración</h2>
-        <p>Alta, edición y borrado de agrupaciones. Aquí podrás completar imagen, autores y YouTube.</p>
+        <p>Alta, edición y borrado de agrupaciones y pregoneros desde un único panel de gestión.</p>
       </a>
     </section>
 
     <div class="actions">
-      <a class="btn btn-primary" href="agrupaciones.html">Entrar al directorio</a>
+      <a class="btn btn-primary" href="agrupaciones.html">Entrar a agrupaciones</a>
+      <a class="btn btn-secondary" href="pregoneros.html">Ver pregoneros</a>
       <a class="btn btn-secondary" href="admin.html">Acceso administración</a>
     </div>
 
