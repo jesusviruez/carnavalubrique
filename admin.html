@@ -122,6 +122,25 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+    .editor-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .editor-tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .editor-tab-btn.active {
+      background: rgba(245, 158, 11, 0.13);
+      color: var(--accent);
+      border-color: rgba(245, 158, 11, 0.24);
+    }
+    .editor-tab-panel { display: none; }
+    .editor-tab-panel.active { display: block; }
+    .editor-tab-actions { margin-top: 12px; }
     .toolbar {
       align-items: center;
       margin-bottom: 16px;
@@ -369,63 +388,79 @@
         <section id="groupEditorSection">
           <form id="groupForm" onsubmit="saveGroup(event)">
             <input type="hidden" id="groupId">
-            <div class="form-group">
-              <label for="groupYear">Año</label>
-              <input type="number" id="groupYear" min="1900" max="2100" required>
+
+            <div class="editor-tabs" id="groupEditorTabs">
+              <button class="editor-tab-btn active" type="button" data-editor-tab="datos">Datos</button>
+              <button class="editor-tab-btn" type="button" data-editor-tab="videos">Vídeos</button>
+              <button class="editor-tab-btn" type="button" data-editor-tab="libretos">Libretos</button>
             </div>
-            <div class="form-group">
-              <label for="groupName">Nombre</label>
-              <input type="text" id="groupName" required>
-            </div>
-            <div class="form-group">
-              <label for="groupType">Tipo</label>
-              <select id="groupType" required>
-                <option value="">Selecciona...</option>
-                <option value="Chirigota">Chirigota</option>
-                <option value="Chirigota Infantil">Chirigota Infantil</option>
-                <option value="Chirigota Juvenil">Chirigota Juvenil</option>
-                <option value="Comparsa">Comparsa</option>
-                <option value="Coro">Coro</option>
-                <option value="Cuarteto">Cuarteto</option>
-                <option value="Murga">Murga</option>
-                <option value="Romancero">Romancero</option>
-                <option value="Romanteto">Romanteto</option>
-                <option value="Dúo">Dúo</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="groupAuthors">Autores</label>
-              <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
-            </div>
-            <div class="form-group">
-              <label for="groupImage">URL de imagen</label>
-              <input type="url" id="groupImage" placeholder="https://...">
-            </div>
-            <div class="form-group">
-              <label for="groupSourceUrl">URL fuente</label>
-              <input type="url" id="groupSourceUrl" placeholder="https://...">
-            </div>
-            <div class="form-group">
-              <label for="groupNotes">Notas</label>
-              <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
-            </div>
-            <div class="section-title">
-              <h3>Vídeos</h3>
-              <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
-            </div>
-            <div id="videosList" class="repeater-list"></div>
-            <div class="form-actions">
-              <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
-            </div>
-            <div class="section-title">
-              <h3>Libreto</h3>
-              <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
-            </div>
-            <div id="libretoList" class="repeater-list"></div>
-            <div class="form-actions">
-              <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
-            </div>
+
+            <section class="editor-tab-panel active" data-editor-panel="datos">
+              <div class="form-group">
+                <label for="groupYear">Año</label>
+                <input type="number" id="groupYear" min="1900" max="2100" required>
+              </div>
+              <div class="form-group">
+                <label for="groupName">Nombre</label>
+                <input type="text" id="groupName" required>
+              </div>
+              <div class="form-group">
+                <label for="groupType">Tipo</label>
+                <select id="groupType" required>
+                  <option value="">Selecciona...</option>
+                  <option value="Chirigota">Chirigota</option>
+                  <option value="Chirigota Infantil">Chirigota Infantil</option>
+                  <option value="Chirigota Juvenil">Chirigota Juvenil</option>
+                  <option value="Comparsa">Comparsa</option>
+                  <option value="Coro">Coro</option>
+                  <option value="Cuarteto">Cuarteto</option>
+                  <option value="Murga">Murga</option>
+                  <option value="Romancero">Romancero</option>
+                  <option value="Romanteto">Romanteto</option>
+                  <option value="Dúo">Dúo</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="groupAuthors">Autores</label>
+                <input type="text" id="groupAuthors" placeholder="Ej: Nombre Apellido / Nombre Apellido">
+              </div>
+              <div class="form-group">
+                <label for="groupImage">URL de imagen</label>
+                <input type="url" id="groupImage" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="groupSourceUrl">URL fuente</label>
+                <input type="url" id="groupSourceUrl" placeholder="https://...">
+              </div>
+              <div class="form-group">
+                <label for="groupNotes">Notas</label>
+                <textarea id="groupNotes" placeholder="Observaciones, contexto, edición del nombre, etc."></textarea>
+              </div>
+            </section>
+
+            <section class="editor-tab-panel" data-editor-panel="videos">
+              <div class="section-title">
+                <h3>Vídeos</h3>
+                <p>Añade tantos vídeos de YouTube como necesites. Cada vídeo permite título, URL y una breve descripción opcional.</p>
+              </div>
+              <div id="videosList" class="repeater-list"></div>
+              <div class="form-actions editor-tab-actions">
+                <button class="btn btn-secondary" type="button" onclick="addVideoItem()">+ Añadir vídeo</button>
+              </div>
+            </section>
+
+            <section class="editor-tab-panel" data-editor-panel="libretos">
+              <div class="section-title">
+                <h3>Libretos</h3>
+                <p>Introduce las letras o fragmentos de la agrupación. Puedes indicar tipo (Presentación, Pasodoble, Cuplé...), título y texto completo.</p>
+              </div>
+              <div id="libretoList" class="repeater-list"></div>
+              <div class="form-actions editor-tab-actions">
+                <button class="btn btn-secondary" type="button" onclick="addLibretoItem()">+ Añadir letra</button>
+              </div>
+            </section>
+
             <div class="form-actions">
               <button class="btn btn-primary" type="submit">Guardar agrupación</button>
               <button class="btn btn-secondary" type="button" onclick="resetGroupForm()">Limpiar</button>
@@ -503,6 +538,23 @@
     const editorSubtitle = document.getElementById('editorSubtitle');
     const groupEditorSection = document.getElementById('groupEditorSection');
     const pregoneroEditorSection = document.getElementById('pregoneroEditorSection');
+    const groupEditorTabButtons = Array.from(document.querySelectorAll('#groupEditorTabs .editor-tab-btn'));
+    const groupEditorTabPanels = Array.from(document.querySelectorAll('#groupForm .editor-tab-panel'));
+
+    function setGroupEditorTab(tabName = 'datos') {
+      groupEditorTabButtons.forEach(button => {
+        const isActive = button.dataset.editorTab === tabName;
+        button.classList.toggle('active', isActive);
+      });
+      groupEditorTabPanels.forEach(panel => {
+        const isActive = panel.dataset.editorPanel === tabName;
+        panel.classList.toggle('active', isActive);
+      });
+    }
+
+    groupEditorTabButtons.forEach(button => {
+      button.addEventListener('click', () => setGroupEditorTab(button.dataset.editorTab));
+    });
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -882,6 +934,7 @@
       else addVideoItem();
       if (groupLibreto.length) groupLibreto.forEach(item => addLibretoItem(item));
       else addLibretoItem();
+      setGroupEditorTab('datos');
       setStatus('groupFormStatus', '', '');
       editorTitle.textContent = group ? 'Editar agrupación' : 'Añadir agrupación';
     }
@@ -943,6 +996,7 @@
       libretoList.innerHTML = '';
       addVideoItem();
       addLibretoItem();
+      setGroupEditorTab('datos');
       if (clearStatus) setStatus('groupFormStatus', '', '');
     };
     window.resetPregoneroForm = function(clearStatus = true) {
